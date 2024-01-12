@@ -24,6 +24,14 @@ public class UserService {
                 .build());
     }
 
+    public boolean checkDuplicatedEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean checkDuplicatedNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
     public User findUserByEmail(String email) {
 
         return userRepository.findByEmail(email);

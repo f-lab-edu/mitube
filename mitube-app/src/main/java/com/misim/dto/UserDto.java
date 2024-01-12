@@ -1,8 +1,6 @@
 package com.misim.dto;
 
-import com.misim.validation.PasswordMatches;
-import com.misim.validation.ValidEmail;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,10 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@PasswordMatches
 public class UserDto {
 
-    @ValidEmail
+    @Email
     @NotNull
     @NotEmpty
     private String email;
@@ -25,7 +22,6 @@ public class UserDto {
     @NotNull
     @NotEmpty
     private String password;
-    private String matchingPassword;
 
     @NotNull
     @NotEmpty
