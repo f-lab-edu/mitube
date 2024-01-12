@@ -4,22 +4,23 @@ import com.misim.dto.UserDto;
 import com.misim.entity.User;
 import com.misim.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public void registerUser(UserDto userDto) {
 
-        // 비밀번호 암호화
-
-
-        // userDto -> user로 변환하여 db에 저장
+        // userDto -> user로 변환하여 db에 저장 (비밀번호 암호화)
         userRepository.save(User.builder()
                 .nickname(userDto.getNickname())
-                .password(userDto.getPassword())
+                .password(passwordEncoder.encode(userDto.getPassword()))
                 .email(userDto.getEmail())
                 .build());
     }

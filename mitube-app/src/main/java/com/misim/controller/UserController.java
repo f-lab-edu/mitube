@@ -6,10 +6,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import static com.misim.util.HttpStatusResponseEntity.RESPONSE_CONFLICT;
-import static com.misim.util.HttpStatusResponseEntity.RESPONSE_OK;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.misim.util.HttpStatusResponseEntity.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +24,19 @@ public class UserController {
 
     // 유저 정보 등록
     @PostMapping("signup")
-    public ResponseEntity<HttpStatus> signupUser(@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity signupUser(@Valid UserDto userDto, BindingResult result) {
+
+        // @Valid 검증 과정에서 오류가 발견되면, BAD_REQUEST 처리.
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            result.getAllErrors().forEach((error) -> {
+                String fieldName = ((FieldError) error).getField();
+                String message = error.getDefaultMessage();
+                errors.put(fieldName, message);
+            });
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
 
         userService.registerUser(userDto);
 
@@ -28,6 +44,7 @@ public class UserController {
     }
 
     // 닉네임 중복 확인
+    // url 주소에 nickname이 포함되도 괜찮은지 의문이 생긴다.
     @PostMapping("signup/{nickname}")
     public ResponseEntity<HttpStatus> checkNickname(@PathVariable String nickname) {
 
