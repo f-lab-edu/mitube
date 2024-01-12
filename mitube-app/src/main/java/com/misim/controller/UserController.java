@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping("signup/{nickname}")
     public ResponseEntity<HttpStatus> checkNickname(@PathVariable String nickname) {
 
-        if (userService.checkDuplicatedNickname(nickname)) {
+        if (userService.isDuplicatedNickname(nickname)) {
             return RESPONSE_CONFLICT;
         }
 
@@ -42,7 +42,7 @@ public class UserController {
     // 이메일 본인 인증
     @PostMapping("verify/{email}")
     public ResponseEntity<HttpStatus> verifyEmail(@PathVariable String email) {
-        if (userService.checkDuplicatedEmail(email)) {
+        if (userService.isDuplicatedEmail(email)) {
 
         } else {
 
