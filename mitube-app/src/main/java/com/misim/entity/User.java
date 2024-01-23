@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@Table(name = "users")
+@Table(name = "users", indexes = {@Index(name = "idx_email", columnList = "email", unique = true), @Index(name = "idx_nickname", columnList = "nickname", unique = true)})
 @NoArgsConstructor
 public class User extends BaseTimeEntity{
 
@@ -13,11 +13,13 @@ public class User extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 400)
+    @Column(length = 32)
     private String email;
 
+    @Column(length = 15)
     private String password;
 
+    @Column(length = 20)
     private String nickname;
 
     @Builder
