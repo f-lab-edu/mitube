@@ -3,21 +3,20 @@ package com.misim.controller.model;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.util.Validator;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter
 public class UserDto implements Checker{
 
     private String email;
     private String password;
     private String confirmPassword;
     private String nickname;
+    private boolean agreeMandatoryTerm1;
+    private boolean agreeMandatoryTerm2;
+    private boolean agreeOptionalTerm1;
+    private boolean agreeOptionalTerm2;
 
     @Override
     public void check() {
@@ -61,5 +60,6 @@ public class UserDto implements Checker{
         Validator.validatePassword(password);
         Validator.validatePassword(confirmPassword);
         Validator.matchPassword(password, confirmPassword);
+        Validator.validateMandatoryTerms(agreeMandatoryTerm1, agreeMandatoryTerm2);
     }
 }

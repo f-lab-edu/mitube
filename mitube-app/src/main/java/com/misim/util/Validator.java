@@ -32,4 +32,10 @@ public class Validator {
             throw new MitubeException(MitubeErrorCode.NOT_MATCH_PASSWORDS);
         }
     }
+
+    public static void validateMandatoryTerms(boolean term1, boolean term2) {
+        if (!term1 || !term2) {
+            throw new MitubeException(MitubeErrorCode.NOT_AGREE_MANDATORY_TERM);
+        }
+    }
 }
