@@ -19,7 +19,7 @@ public enum MitubeErrorCode implements ErrorCode{
 
     NOT_FOUND_TERM(HttpStatus.BAD_REQUEST, "해당 약관을 찾을 수 없습니다.", 20000),
     NOT_AGREE_MANDATORY_TERM(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.", 20001),
-    CHECK_UPDATED_TERMS(HttpStatus.BAD_REQUEST, "약관의 수정 사항을 확인해보세요.", 20002),
+    CHECK_TERMS_UPDATE(HttpStatus.BAD_REQUEST, "약관의 수정 사항을 확인해보세요.", 20002),
 
     UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 에러가 발생했습니다.", 99999),
     ;

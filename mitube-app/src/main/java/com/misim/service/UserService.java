@@ -1,16 +1,11 @@
 package com.misim.service;
 
 import com.misim.controller.model.UserDto;
-import com.misim.entity.Term;
-import com.misim.entity.TermAgreement;
 import com.misim.entity.User;
 import com.misim.exception.MitubeException;
 import com.misim.exception.MitubeErrorCode;
-import com.misim.repository.TermAgreementRepository;
-import com.misim.repository.TermRepository;
 import com.misim.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +18,9 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final TermAgreementRepository termAgreementRepository;
-    private final TermRepository termRepository;
+    private final TermAgreementService termAgreementService;
 
-    private BCryptPasswordEncoder passwordEncoder;
+    protected BCryptPasswordEncoder passwordEncoder;
 
     public void registerUser(UserDto userDto) {
 
@@ -48,26 +42,7 @@ public class UserService {
 
         // 약관 동의
         List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeMandatoryTerm1(), userDto.isAgreeMandatoryTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
-        List<Term> termList = termRepository.findAll(Sort.by("id"));
 
-        if (agreeList.size() != termList.size()) {
-            throw new MitubeException(MitubeErrorCode.CHECK_UPDATED_TERMS);
-        }
-
-        setTermAgreement(agreeList, termList, user);
-
-    }
-
-    private void setTermAgreement(List<Boolean> agreements, List<Term> terms, User user) {
-        TermAgreement termAgreement;
-        for (int i=0; i<agreements.size(); i++) {
-            termAgreement = TermAgreement.builder()
-                    .user(user)
-                    .term(terms.get(i))
-                    .isAgree(agreements.get(i))
-                    .build();
-
-            termAgreementRepository.save(termAgreement);
-        }
+        termAgreementService.setTermAgreements(user, agreeList);
     }
 }
