@@ -51,17 +51,5 @@ public class UserController {
 
         }
     }
-
-    // 약관
-    @GetMapping("term")
-    public ResponseEntity<> showTerm() {
-
-    }
-
-    @PostMapping("term/{nickname}")
-    public saveTerm(@PathVariable String nickname) {
-
-    }
-
      */
 }
