@@ -16,16 +16,25 @@ public class User extends BaseTimeEntity{
     @Column(length = 32)
     private String email;
 
-    @Column(length = 15)
+    @Column(length = 60)
     private String password;
 
     @Column(length = 20)
     private String nickname;
+
+    private boolean isEnabled;
+
+    // OneToMany
 
     @Builder
     public User(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.isEnabled = false;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.isEnabled = enabled;
     }
 }
