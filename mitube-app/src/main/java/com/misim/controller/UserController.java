@@ -62,9 +62,9 @@ public class UserController {
 
         smsVerificationDto.check();
 
-        smsService.matchSMS(smsVerificationDto, current);
+        String key = smsService.matchSMS(smsVerificationDto, current);
 
-        return ResponseEntity.ok().body();
+        return ResponseEntity.ok().body(key);
     }
 
 
