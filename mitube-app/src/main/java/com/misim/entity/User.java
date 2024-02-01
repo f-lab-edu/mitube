@@ -3,6 +3,9 @@ package com.misim.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "users", indexes = {@Index(name = "idx_email", columnList = "email", unique = true), @Index(name = "idx_nickname", columnList = "nickname", unique = true), @Index(name = "idx_phoneNb", columnList = "phoneNumber", unique = true)})
@@ -16,6 +19,7 @@ public class User extends BaseTimeEntity{
     @Column(length = 32)
     private String email;
 
+    @Setter
     @Column(length = 60)
     private String password;
 
@@ -26,7 +30,8 @@ public class User extends BaseTimeEntity{
 
     private boolean isEnabled;
 
-    // OneToMany
+    @OneToMany(mappedBy = "user")
+    private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
 
     @Builder
     public User(String email, String password, String nickname, String phoneNumber) {
@@ -34,10 +39,18 @@ public class User extends BaseTimeEntity{
         this.password = password;
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
-        this.isEnabled = false;
+        this.isEnabled = true;
     }
 
     public void setEnabled(boolean enabled) {
         this.isEnabled = enabled;
+    }
+
+    public void addTermAgreements(TermAgreement termAgreement) {
+        this.termAgreements.add(termAgreement);
+
+        if (termAgreement.getUser() != this) {
+            termAgreement.setUser(this);
+        }
     }
 }

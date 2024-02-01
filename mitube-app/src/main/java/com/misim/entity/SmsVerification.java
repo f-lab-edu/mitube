@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-public class SmsVerification extends BaseTimeEntity{
+public class SmsVerification {
     private static final long EXPIRATION_MINUTES = 3;
 
     @Id

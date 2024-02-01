@@ -1,10 +1,11 @@
 package com.misim.service;
 
-import com.misim.controller.model.SmsVerificationDto;
+import com.misim.controller.model.VerificationDto;
 import com.misim.entity.SmsVerification;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.repository.SmsVerificationRespository;
+import com.misim.util.Base64Convertor;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
@@ -74,9 +75,9 @@ public class SmsService {
         return sb.toString();
     }
 
-    public String matchSMS(SmsVerificationDto smsVerificationDto, LocalDateTime current) {
+    public String matchSMS(VerificationDto verificationDto, LocalDateTime current) {
 
-        SmsVerification smsVerification = smsVerificationRespository.findTopByPhoneNumberAndVerificationCodeOrderByExpiryDate(smsVerificationDto.getPhoneNumber(), smsVerificationDto.getCode());
+        SmsVerification smsVerification = smsVerificationRespository.findTopByPhoneNumberAndVerificationCodeOrderByExpiryDate(verificationDto.getPhoneNumber(), verificationDto.getToken());
 
         if (smsVerification == null) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_CODE);
@@ -93,8 +94,20 @@ public class SmsService {
         smsVerification.setVerified(true);
         smsVerificationRespository.save(smsVerification);
 
-        smsVerification.getId();
+        return Base64Convertor.encode(smsVerification.getId());
+    }
 
-        return ;
+    public boolean checkVerification(String token) {
+
+        Long id = Base64Convertor.decode(token);
+        if (id != 1) {
+            throw new MitubeException(MitubeErrorCode.UNKNOWN_EXCEPTION);
+        }
+
+        SmsVerification smsVerification = smsVerificationRespository
+                .findById(id)
+                .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
+
+        return smsVerification.getIsVerified();
     }
 }

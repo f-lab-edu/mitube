@@ -2,27 +2,19 @@ package com.misim.service;
 
 import com.misim.controller.model.UserDto;
 import com.misim.entity.User;
-import com.misim.entity.VerificationToken;
 import com.misim.exception.MitubeException;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.repository.UserRepository;
-import com.misim.repository.VerificationTokenRepository;
+import com.misim.util.TemporaryPasswordGenerator;
 import lombok.RequiredArgsConstructor;
-import net.nurigo.sdk.NurigoApp;
-import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
-import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,82 +22,77 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final TermAgreementService termAgreementService;
-    private final VerificationTokenRepository tokenRepository;
-    private final JavaMailSender mailSender;
+    private final SmsService smsService;
+    private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
     
     public void registerUser(UserDto userDto) {
+
+        // 본인 인증 확인
+        if (!smsService.checkVerification(userDto.getToken())) {
+            throw new MitubeException(MitubeErrorCode.NOT_VERIFIED_SMS_TOKEN);
+        }
 
         // 닉네임 중복 확인
         if (userRepository.existsByNickname(userDto.getNickname())) {
             throw new MitubeException(MitubeErrorCode.EXIST_NICKNAME);
         }
-
-
         // 이메일 중복 확인
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new MitubeException(MitubeErrorCode.EXIST_EMAIL);
         }
 
-
-        // userDto -> user로 변환하여 db에 저장 (비밀번호 암호화)
+        // userDto -> user로 변환 (비밀번호 암호화)
         User user = User.builder()
                 .nickname(userDto.getNickname())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .email(userDto.getEmail())
+                .phoneNumber(userDto.getPhoneNumber())
                 .build();
 
+
+        // 유저 정보 저장
         userRepository.save(user);
 
-        // 약관 동의
-        List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeMandatoryTerm1(), userDto.isAgreeMandatoryTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
+        // 약관 동의 정보 연결
+        List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeRequiredTerm1(), userDto.isAgreeRequiredTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
 
         termAgreementService.setTermAgreements(user, agreeList);
+
+        // 본인 인증 정보와 유저 정보 연결
+        verificationTokenService.setVerificationToken(user, userDto.getToken());
     }
 
-    /*
-    private void sendVerificationEmail(User user, String url) {
+    public void resetUserPassword(String nickname, String token) {
 
-        String token = UUID.randomUUID().toString();
+        User user = verificationTokenService.findUser(token);
 
-        tokenRepository.save(new VerificationToken(token, user));
+        if (nickname.equals(user.getNickname())) {
+            String randomPassword = TemporaryPasswordGenerator.generateRandomPassword();
+            user.setPassword(passwordEncoder.encode(randomPassword));
+
+            userRepository.save(user);
+
+            sendTemporaryPasswordByEmail(user);
+        }
+    }
+
+    private void sendTemporaryPasswordByEmail(User user) {
 
         // 이메일 설정
         String toAddress = user.getEmail();
         String fromAddress = "hongkildong990@gmail.com";
-        String subject = "Please verify your account!";
-        String content = "Please click the link below to verify your account:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY ACCOUNT</a></h3>";
+        String subject = "Temporary Password Notification";
+        String content = "Hello,\n\nWe are sending you a temporary password.\n\nTemporary Password: " + user.getPassword() + "\n\nPlease be sure to change your password after logging in.\n\nThank you.";
 
-        String verifyURL = url + "/verifyAccount?token=" + token;
-
-        content = content.replace("[[URL]]", verifyURL);
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(toAddress);
-        email.setSubject(subject);
         email.setFrom(fromAddress);
+        email.setSubject(subject);
         email.setText(content);
 
         mailSender.send(email);
-    }
-
-     */
-
-    public void verifyAccount(String token) {
-
-        VerificationToken verificationToken = tokenRepository.findByToken(token);
-        if (verificationToken == null) {
-            throw new MitubeException(MitubeErrorCode.NOT_FOUND_TOKEN);
-        }
-
-        User user = verificationToken.getUser();
-        LocalDateTime current = LocalDateTime.now();
-        if (current.isAfter(verificationToken.getExpiryDate())) {
-            throw new MitubeException(MitubeErrorCode.EXPIRED_TOKEN);
-        }
-
-        user.setEnabled(true);
-        userRepository.save(user);
     }
 }
