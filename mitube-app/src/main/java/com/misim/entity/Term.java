@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Table(name = "terms")
 @NoArgsConstructor
-public class Term extends BaseTimeEntity{
+public class Term extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,6 @@ public class Term extends BaseTimeEntity{
     
     // 그룹 -> 그룹바이
 
-    // OneToMany user, termAgreement
     @OneToMany(mappedBy = "term")
     private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
 
