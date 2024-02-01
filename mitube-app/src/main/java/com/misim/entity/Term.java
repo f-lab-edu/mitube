@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "terms")
@@ -19,12 +22,28 @@ public class Term extends BaseTimeEntity{
 
     private String content;
 
-    private boolean isMandatory;
+    private Boolean isRequired;
+    
+    // 버전 -> 최신 버전
+    
+    // 그룹 -> 그룹바이
+
+    // OneToMany user, termAgreement
+    @OneToMany(mappedBy = "term")
+    private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
 
     @Builder
-    public Term(String title, String content, Boolean isMandatory) {
+    public Term(String title, String content, Boolean isRequired) {
         this.title = title;
         this.content = content;
-        this.isMandatory = isMandatory;
+        this.isRequired = isRequired;
+    }
+
+    public void addTermAgreements(TermAgreement termAgreement) {
+        this.termAgreements.add(termAgreement);
+
+        if (termAgreement.getTerm() != this) {
+            termAgreement.setTerm(this);
+        }
     }
 }

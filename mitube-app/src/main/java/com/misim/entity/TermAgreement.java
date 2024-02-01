@@ -26,9 +26,23 @@ public class TermAgreement extends BaseTimeEntity{
     private boolean isAgree;
 
     @Builder
-    public TermAgreement(User user, Term term, Boolean isAgree) {
-        this.user = user;
-        this.term = term;
+    public TermAgreement(Boolean isAgree) {
         this.isAgree = isAgree;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+
+        if (!user.getTermAgreements().contains(this)) {
+            user.getTermAgreements().add(this);
+        }
+    }
+
+    public void setTerm(Term term) {
+        this.term = term;
+
+        if (!term.getTermAgreements().contains(this)) {
+            term.getTermAgreements().add(this);
+        }
     }
 }

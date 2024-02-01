@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,15 +33,20 @@ public class TermAgreementService {
     }
 
     private void setTermAgreement(List<Boolean> agreements, List<Term> terms, User user) {
-        TermAgreement termAgreement;
+
+        List<TermAgreement> termAgreements = new ArrayList<>();
+
         for (int i=0; i<agreements.size(); i++) {
-            termAgreement = TermAgreement.builder()
-                    .user(user)
-                    .term(terms.get(i))
+            TermAgreement termAgreement = TermAgreement.builder()
                     .isAgree(agreements.get(i))
                     .build();
 
-            termAgreementRepository.save(termAgreement);
+            termAgreement.setTerm(terms.get(i));
+            termAgreement.setUser(user);
+
+            termAgreements.add(termAgreement);
         }
+
+        termAgreementRepository.saveAll(termAgreements);
     }
 }
