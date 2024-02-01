@@ -8,6 +8,11 @@ import com.misim.exception.MitubeErrorCode;
 import com.misim.repository.UserRepository;
 import com.misim.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.response.SingleMessageSentResponse;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +34,7 @@ public class UserService {
     private final JavaMailSender mailSender;
     private final PasswordEncoder passwordEncoder;
     
-    public void registerUser(UserDto userDto, String url) {
+    public void registerUser(UserDto userDto) {
 
         // 닉네임 중복 확인
         if (userRepository.existsByNickname(userDto.getNickname())) {
@@ -52,15 +57,13 @@ public class UserService {
 
         userRepository.save(user);
 
-        // 이메일 전송
-        sendVerificationEmail(user, url);
-
         // 약관 동의
         List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeMandatoryTerm1(), userDto.isAgreeMandatoryTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
 
         termAgreementService.setTermAgreements(user, agreeList);
     }
 
+    /*
     private void sendVerificationEmail(User user, String url) {
 
         String token = UUID.randomUUID().toString();
@@ -86,6 +89,8 @@ public class UserService {
 
         mailSender.send(email);
     }
+
+     */
 
     public void verifyAccount(String token) {
 

@@ -13,6 +13,7 @@ public class UserDto implements Checker{
     private String password;
     private String confirmPassword;
     private String nickname;
+    private String phoneNumber;
     private boolean agreeMandatoryTerm1;
     private boolean agreeMandatoryTerm2;
     private boolean agreeOptionalTerm1;
