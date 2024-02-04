@@ -11,6 +11,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +29,8 @@ public class UserService {
     private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
-    
+    private final PlatformTransactionManager transactionManager;
+
     public void registerUser(UserDto userDto) {
 
         // 본인 인증 확인
@@ -43,25 +47,33 @@ public class UserService {
             throw new MitubeException(MitubeErrorCode.EXIST_EMAIL);
         }
 
-        // userDto -> user로 변환 (비밀번호 암호화)
-        User user = User.builder()
-                .nickname(userDto.getNickname())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .email(userDto.getEmail())
-                .phoneNumber(userDto.getPhoneNumber())
-                .build();
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+
+        try {
+            // userDto -> user로 변환 (비밀번호 암호화)
+            User user = User.builder()
+                    .nickname(userDto.getNickname())
+                    .password(passwordEncoder.encode(userDto.getPassword()))
+                    .email(userDto.getEmail())
+                    .phoneNumber(userDto.getPhoneNumber())
+                    .build();
 
 
-        // 유저 정보 저장
-        userRepository.save(user);
+            // 유저 정보 저장
+            userRepository.save(user);
 
-        // 약관 동의 정보 연결
-        List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeRequiredTerm1(), userDto.isAgreeRequiredTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
+            // 약관 동의 정보 연결
+            List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeRequiredTerm1(), userDto.isAgreeRequiredTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
 
-        termAgreementService.setTermAgreements(user, agreeList);
+            termAgreementService.setTermAgreements(user, agreeList);
 
-        // 본인 인증 정보와 유저 정보 연결
-        verificationTokenService.setVerificationToken(user, userDto.getToken());
+            // 본인 인증 정보와 유저 정보 연결
+            verificationTokenService.setVerificationToken(user, userDto.getToken());
+
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+        }
     }
 
     public void resetUserPassword(String nickname, String token) {
