@@ -78,16 +78,25 @@ public class UserService {
 
     public void resetUserPassword(String nickname, String token) {
 
-        User user = verificationTokenService.findUser(token);
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
-        if (nickname.equals(user.getNickname())) {
-            String randomPassword = TemporaryPasswordGenerator.generateRandomPassword();
-            user.setPassword(passwordEncoder.encode(randomPassword));
+        try {
+            User user = verificationTokenService.findUser(token);
 
-            userRepository.save(user);
+            if (nickname.equals(user.getNickname())) {
+                String randomPassword = TemporaryPasswordGenerator.generateRandomPassword();
+                user.setPassword(passwordEncoder.encode(randomPassword));
 
-            sendTemporaryPasswordByEmail(user);
+                userRepository.save(user);
+
+                sendTemporaryPasswordByEmail(user);
+
+                transactionManager.commit(status);
+            }
+        } catch (Exception e) {
+            transactionManager.rollback(status);
         }
+
     }
 
     private void sendTemporaryPasswordByEmail(User user) {

@@ -100,9 +100,6 @@ public class SmsService {
     public boolean checkVerification(String token) {
 
         Long id = Base64Convertor.decode(token);
-        if (id != 1) {
-            throw new MitubeException(MitubeErrorCode.UNKNOWN_EXCEPTION);
-        }
 
         SmsVerification smsVerification = smsVerificationRespository
                 .findById(id)
