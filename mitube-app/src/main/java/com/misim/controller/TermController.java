@@ -1,7 +1,6 @@
 package com.misim.controller;
 
 import com.misim.controller.model.TermResponseDto;
-import com.misim.controller.model.TermTitleResponseDto;
 import com.misim.exception.CommonResponse;
 import com.misim.service.TermService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Terms API", description = "약관 내용을 제공하는 API")
 @RestController
 @RequiredArgsConstructor
@@ -25,15 +26,15 @@ public class TermController {
     private final TermService termService;
 
     // 모든 약관 타이틀 제시
-    @Operation(summary = "전체 약관 제목 전송", description = "전체 약관 타이틀 정보 가져오기")
+    @Operation(summary = "전체 약관 전송", description = "전체 약관 정보 가져오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "약관 타이틀 정보 전달 성공.")})
+            @ApiResponse(responseCode = "200", description = "전체 약관 정보 전달 성공.")})
     @GetMapping("/agree")
-    public ResponseEntity<TermTitleResponseDto> getTermTitles() {
+    public ResponseEntity<List<TermResponseDto>> getTerms() {
 
-        TermTitleResponseDto titles = termService.getTermTitles();
+        List<TermResponseDto> terms = termService.getAllTerms();
 
-        return ResponseEntity.ok().body(titles);
+        return ResponseEntity.ok().body(terms);
     }
     
     // 자세히 버튼 클릭 시 해당 약관에 대한 자세한 내용 제시

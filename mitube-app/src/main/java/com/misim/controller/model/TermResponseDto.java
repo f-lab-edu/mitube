@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-@Schema(description = "상세 약관 정보 반환 DTO")
+@Schema(description = "약관 정보 반환 DTO")
 public class TermResponseDto {
 
     @Schema(description = "약관 제목")

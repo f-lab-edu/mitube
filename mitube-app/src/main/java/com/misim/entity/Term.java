@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Table(name = "terms")
 @NoArgsConstructor
-public class Term extends BaseTimeEntity {
+public class Term {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
