@@ -23,10 +23,6 @@ public class Term {
     private String content;
 
     private Boolean isRequired;
-    
-    // 버전 -> 최신 버전
-    
-    // 그룹 -> 그룹바이
 
     @OneToMany(mappedBy = "term")
     private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
