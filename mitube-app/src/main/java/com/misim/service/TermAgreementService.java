@@ -23,13 +23,16 @@ public class TermAgreementService {
     private final TermRepository termRepository;
 
     protected void setTermAgreements(User user, List<Boolean> agreements) {
-        List<Term> termList = termRepository.findAll(Sort.by("id"));
 
-        if (agreements.size() != termList.size()) {
+        // Term api에서 전체 약관 정보 전달 시 사용하는 레포지토리 메소드가 아래의 메소드와 같아서 동일한 순서임이 보장된다.
+        // 인자로 받은 agreements와 terms의 순서가 같다.
+        List<Term> terms = termRepository.findTermGroupByTitle();
+
+        if (agreements.size() != terms.size()) {
             throw new MitubeException(MitubeErrorCode.CHECK_TERMS_UPDATE);
         }
 
-        setTermAgreement(agreements, termList, user);
+        setTermAgreement(agreements, terms, user);
     }
 
     private void setTermAgreement(List<Boolean> agreements, List<Term> terms, User user) {
