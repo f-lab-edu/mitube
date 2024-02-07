@@ -4,7 +4,7 @@ import com.misim.controller.model.VerificationDto;
 import com.misim.entity.SmsVerification;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
-import com.misim.repository.SmsVerificationRespository;
+import com.misim.repository.SmsVerificationRepository;
 import com.misim.util.Base64Convertor;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
@@ -22,7 +22,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class SmsService {
 
-    private final SmsVerificationRespository smsVerificationRespository;
+    private final SmsVerificationRepository smsVerificationRepository;
 
     @Value(value = "${coolsms.api-key}")
     private String apiKey;
@@ -52,16 +52,30 @@ public class SmsService {
 
             if (responseStatus.equals("2000") || responseStatus.equals("3000")) {
 
-                SmsVerification smsVerification = SmsVerification.builder()
-                        .phoneNumber(phoneNumber)
-                        .verificationCode(code)
-                        .build();
+                SmsVerification smsVerification = makeSmsVerification(phoneNumber, code);
 
-                smsVerificationRespository.save(smsVerification);
+                smsVerificationRepository.save(smsVerification);
             }
         }
         
         // 에러처리
+    }
+
+    private SmsVerification makeSmsVerification(String phoneNumber, String code) {
+
+        SmsVerification smsVerification = smsVerificationRepository.findSmsVerificationByPhoneNumber(phoneNumber);
+
+        if (smsVerification == null) {
+            smsVerification = SmsVerification.builder()
+                    .phoneNumber(phoneNumber)
+                    .build();
+        }
+
+        smsVerification.setVerificationCode(code);
+        smsVerification.setExpiryDate(LocalDateTime.now());
+        smsVerification.setCurrentFailures(0);
+
+        return smsVerification;
     }
 
     public String makeCode() {
@@ -77,10 +91,14 @@ public class SmsService {
 
     public String matchSMS(VerificationDto verificationDto, LocalDateTime current) {
 
-        SmsVerification smsVerification = smsVerificationRespository.findTopByPhoneNumberAndVerificationCodeOrderByExpiryDate(verificationDto.getPhoneNumber(), verificationDto.getToken());
+        SmsVerification smsVerification = smsVerificationRepository.findSmsVerificationByPhoneNumber(verificationDto.getPhoneNumber());
 
         if (smsVerification == null) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_CODE);
+        }
+
+        if (smsVerification.getVerificationCode().equals(verificationDto.getToken())) {
+            throw new MitubeException(MitubeErrorCode.NOT_MATCH_CODE);
         }
 
         if (smsVerification.getIsVerified()) {
@@ -91,8 +109,10 @@ public class SmsService {
             throw new MitubeException(MitubeErrorCode.EXPIRED_CODE);
         }
 
+        smsVerification.setCurrentFailures(smsVerification.getCurrentFailures());
+
         smsVerification.setVerified(true);
-        smsVerificationRespository.save(smsVerification);
+        smsVerificationRepository.save(smsVerification);
 
         return Base64Convertor.encode(smsVerification.getId());
     }
@@ -101,7 +121,7 @@ public class SmsService {
 
         Long id = Base64Convertor.decode(token);
 
-        SmsVerification smsVerification = smsVerificationRespository
+        SmsVerification smsVerification = smsVerificationRepository
                 .findById(id)
                 .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
 

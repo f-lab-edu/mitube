@@ -31,7 +31,8 @@ public enum MitubeErrorCode implements ErrorCode{
     INVALID_CODE(HttpStatus.BAD_REQUEST, "코드 형식에 맞지 않습니다.", 10401),
     EXPIRED_CODE(HttpStatus.BAD_REQUEST, "해당 코드이 만료되었습니다.", 10402),
     VERIFIED_CODE(HttpStatus.BAD_REQUEST, "해당 코드이 인증되었습니다.", 10403),
-
+    MAX_FAILURES(HttpStatus.BAD_REQUEST, "최대 인증 실패 횟수를 넘었습니다.", 10404),
+    NOT_MATCH_CODE(HttpStatus.BAD_REQUEST, "잘못된 코드입니다.", 10405),
 
     INVALID_PHONENUMBER(HttpStatus.BAD_REQUEST, "전화번호 형식에 맞지 않습니다.", 10500),
 

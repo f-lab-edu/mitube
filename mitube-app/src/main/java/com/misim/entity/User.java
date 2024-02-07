@@ -19,7 +19,6 @@ public class User extends BaseTimeEntity{
     @Column(length = 32)
     private String email;
 
-    @Setter
     @Column(length = 60)
     private String password;
 
@@ -40,10 +39,6 @@ public class User extends BaseTimeEntity{
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.isEnabled = true;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.isEnabled = enabled;
     }
 
     public void addTermAgreements(TermAgreement termAgreement) {

@@ -5,7 +5,7 @@ import com.misim.entity.User;
 import com.misim.entity.VerificationToken;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
-import com.misim.repository.SmsVerificationRespository;
+import com.misim.repository.SmsVerificationRepository;
 import com.misim.repository.VerificationTokenRepository;
 import com.misim.util.Base64Convertor;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 public class VerificationTokenService {
 
     private final VerificationTokenRepository verificationTokenRepository;
-    private final SmsVerificationRespository smsVerificationRespository;
+    private final SmsVerificationRepository smsVerificationRepository;
 
 
     public void setVerificationToken(User user, String token) {
-        SmsVerification smsVerification = smsVerificationRespository
+        SmsVerification smsVerification = smsVerificationRepository
                 .findById(Base64Convertor.decode(token))
                 .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
 
@@ -34,7 +34,7 @@ public class VerificationTokenService {
 
     public User findUser(String token) {
 
-        SmsVerification smsVerification = smsVerificationRespository
+        SmsVerification smsVerification = smsVerificationRepository
                 .findById(Base64Convertor.decode(token))
                 .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
 
@@ -45,7 +45,7 @@ public class VerificationTokenService {
 
     public String findUserNickname(String token) {
 
-        SmsVerification smsVerification = smsVerificationRespository
+        SmsVerification smsVerification = smsVerificationRepository
                 .findById(Base64Convertor.decode(token))
                 .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
 
