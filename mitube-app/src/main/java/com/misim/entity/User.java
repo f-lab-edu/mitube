@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "users", indexes = {@Index(name = "idx_email", columnList = "email", unique = true), @Index(name = "idx_nickname", columnList = "nickname", unique = true), @Index(name = "idx_phoneNb", columnList = "phoneNumber", unique = true)})
+@Table(name = "users", indexes = {@Index(name = "idx_email", columnList = "email", unique = true), @Index(name = "idx_nickname", columnList = "nickname", unique = true)})
 @NoArgsConstructor
 public class User extends BaseTimeEntity{
 
@@ -20,6 +20,7 @@ public class User extends BaseTimeEntity{
     private String email;
 
     @Column(length = 60)
+    @Setter
     private String password;
 
     @Column(length = 20)

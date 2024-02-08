@@ -25,17 +25,30 @@ public class SwaggerConfig {
                 .description("Youtube 클론 프로젝트")
                 .version("1.0.0");
     }
-
-    @Bean
-    public GroupedOpenApi userGroup() {
-        List<Tag> tags = List.of(
-                new Tag().name("User API").description("User API")
-        );
-
-        return GroupedOpenApi.builder()
-                .group("User")
-                .pathsToMatch("/users/**")
-                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
-                .build();
-    }
+//
+//    @Bean
+//    public GroupedOpenApi userGroup() {
+//        List<Tag> tags = List.of(
+//                new Tag().name("User API").description("User API")
+//        );
+//
+//        return GroupedOpenApi.builder()
+//                .group("User")
+//                .pathsToMatch("/users/**")
+//                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
+//                .build();
+//    }
+//
+//    @Bean
+//    public GroupedOpenApi termGroup() {
+//        List<Tag> tags = List.of(
+//                new Tag().name("Term API").description("Term API")
+//        );
+//
+//        return GroupedOpenApi.builder()
+//                .group("Term")
+//                .pathsToMatch("/terms/**")
+//                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
+//                .build();
+//    }
 }

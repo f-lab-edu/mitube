@@ -9,7 +9,6 @@ import com.misim.exception.MitubeException;
 import com.misim.repository.TermAgreementRepository;
 import com.misim.repository.TermRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ public class TermAgreementService {
     private final TermAgreementRepository termAgreementRepository;
     private final TermRepository termRepository;
 
-    protected void setTermAgreements(User user, List<Boolean> agreements) {
+    protected void associateTermAgreements(User user, List<Boolean> agreements) {
 
         // Term api에서 전체 약관 정보 전달 시 사용하는 레포지토리 메소드가 아래의 메소드와 같아서 동일한 순서임이 보장된다.
         // 인자로 받은 agreements와 terms의 순서가 같다.
@@ -32,10 +31,10 @@ public class TermAgreementService {
             throw new MitubeException(MitubeErrorCode.CHECK_TERMS_UPDATE);
         }
 
-        setTermAgreement(agreements, terms, user);
+        saveTermAgreements(agreements, terms, user);
     }
 
-    private void setTermAgreement(List<Boolean> agreements, List<Term> terms, User user) {
+    private void saveTermAgreements(List<Boolean> agreements, List<Term> terms, User user) {
 
         List<TermAgreement> termAgreements = new ArrayList<>();
 

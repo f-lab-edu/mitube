@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-@Tag(name = "User API", description = "User API")
+@Tag(name = "유저 API", description = "유저 정보 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -57,7 +57,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "SMS 인증 코드 발송 성공."),
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
-    @GetMapping("/verifyAccountSMS")
+    @GetMapping("/sendVerificationBySMS")
     public void sendSMSVerificationCode(@RequestParam @Parameter(description = "전화번호", in = ParameterIn.QUERY, example = "01012345678") String phoneNumber) {
         Validator.validatePhoneNumber(phoneNumber);
 
@@ -76,7 +76,7 @@ public class UserController {
 
         verificationDto.check();
 
-        String token = smsService.matchSMS(verificationDto, current);
+        String token = smsService.matchSMS(verificationDto.getPhoneNumber(), verificationDto.getToken(), current);
 
         return ResponseEntity.ok().body(token);
     }
@@ -92,7 +92,7 @@ public class UserController {
     @PostMapping("/help/findId")
     public ResponseEntity<?> findId(@RequestBody VerificationDto verificationDto) {
 
-        String nickname = verificationTokenService.findUserNickname(verificationDto.getToken());
+        String nickname = verificationTokenService.findUserNicknameByToken(verificationDto.getToken());
 
         return ResponseEntity.ok().body(nickname);
     }

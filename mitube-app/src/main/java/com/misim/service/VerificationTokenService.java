@@ -19,7 +19,8 @@ public class VerificationTokenService {
     private final SmsVerificationRepository smsVerificationRepository;
 
 
-    public void setVerificationToken(User user, String token) {
+    public void associateVerificationToken(User user, String token) {
+
         SmsVerification smsVerification = smsVerificationRepository
                 .findById(Base64Convertor.decode(token))
                 .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
@@ -32,24 +33,28 @@ public class VerificationTokenService {
         verificationTokenRepository.save(verificationToken);
     }
 
-    public User findUser(String token) {
+    public User findUserByToken(String token) {
 
-        SmsVerification smsVerification = smsVerificationRepository
-                .findById(Base64Convertor.decode(token))
-                .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
+        Long id = Base64Convertor.decode(token);
 
-        VerificationToken verificationToken = verificationTokenRepository.findVerificationTokenBySmsVerificationId(smsVerification.getId());
+        if (!smsVerificationRepository.existsById(id)) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN);
+        }
+
+        VerificationToken verificationToken = verificationTokenRepository.findVerificationTokenBySmsVerificationId(id);
 
         return verificationToken.getUser();
     }
 
-    public String findUserNickname(String token) {
+    public String findUserNicknameByToken(String token) {
 
-        SmsVerification smsVerification = smsVerificationRepository
-                .findById(Base64Convertor.decode(token))
-                .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
+        Long id = Base64Convertor.decode(token);
 
-        VerificationToken verificationToken = verificationTokenRepository.findVerificationTokenBySmsVerificationId(smsVerification.getId());
+        if (!smsVerificationRepository.existsById(id)) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN);
+        }
+
+        VerificationToken verificationToken = verificationTokenRepository.findVerificationTokenBySmsVerificationId(id);
 
         return verificationToken.getUser().getNickname();
     }

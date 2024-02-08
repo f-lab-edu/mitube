@@ -36,6 +36,8 @@ public enum MitubeErrorCode implements ErrorCode{
 
     INVALID_PHONENUMBER(HttpStatus.BAD_REQUEST, "전화번호 형식에 맞지 않습니다.", 10500),
 
+    EMPTY_FILE(HttpStatus.BAD_REQUEST, "빈 파일입니다.", 10600),
+
     UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 에러가 발생했습니다.", 99999),
     ;
 

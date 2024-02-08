@@ -33,6 +33,8 @@ public class SmsService {
     @Value(value = "${coolsms.from-phonenumber}")
     private String fromPhoneNumber;
 
+    // ******* 수정 필요 ********
+    // sms api를 사용하기 때문에 발생할 수 있는 상황에 대한 고려가 필요하다.
     public void sendSMS(String phoneNumber) {
 
         DefaultMessageService messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecretKey, apiUrl);
@@ -89,15 +91,15 @@ public class SmsService {
         return sb.toString();
     }
 
-    public String matchSMS(VerificationDto verificationDto, LocalDateTime current) {
+    public String matchSMS(String phoneNumber, String token, LocalDateTime current) {
 
-        SmsVerification smsVerification = smsVerificationRepository.findSmsVerificationByPhoneNumber(verificationDto.getPhoneNumber());
+        SmsVerification smsVerification = smsVerificationRepository.findSmsVerificationByPhoneNumber(phoneNumber);
 
         if (smsVerification == null) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_CODE);
         }
 
-        if (smsVerification.getVerificationCode().equals(verificationDto.getToken())) {
+        if (smsVerification.getVerificationCode().equals(token)) {
             throw new MitubeException(MitubeErrorCode.NOT_MATCH_CODE);
         }
 
@@ -119,10 +121,8 @@ public class SmsService {
 
     public boolean checkVerification(String token) {
 
-        Long id = Base64Convertor.decode(token);
-
         SmsVerification smsVerification = smsVerificationRepository
-                .findById(id)
+                .findById(Base64Convertor.decode(token))
                 .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
 
         return smsVerification.getIsVerified();

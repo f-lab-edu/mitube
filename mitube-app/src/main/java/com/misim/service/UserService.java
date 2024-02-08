@@ -31,6 +31,9 @@ public class UserService {
     private final JavaMailSender mailSender;
     private final PlatformTransactionManager transactionManager;
 
+
+    // ******* 수정 필요 ********
+    // try-catch에서 exception 발생했을 때, 단순히 롤백만 하는게 아니라 뭔가 더 있으면 좋겠는데
     public void registerUser(UserDto userDto) {
 
         // 본인 인증 확인
@@ -63,12 +66,12 @@ public class UserService {
             userRepository.save(user);
 
             // 약관 동의 정보 연결
-            List<Boolean> agreeList = new ArrayList<>(Arrays.asList(userDto.isAgreeRequiredTerm1(), userDto.isAgreeRequiredTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
+            List<Boolean> agreements = new ArrayList<>(Arrays.asList(userDto.isAgreeRequiredTerm1(), userDto.isAgreeRequiredTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
 
-            termAgreementService.setTermAgreements(user, agreeList);
+            termAgreementService.associateTermAgreements(user, agreements);
 
             // 본인 인증 정보와 유저 정보 연결
-            verificationTokenService.setVerificationToken(user, userDto.getToken());
+            verificationTokenService.associateVerificationToken(user, userDto.getToken());
 
             transactionManager.commit(status);
         } catch (Exception e) {
@@ -76,12 +79,15 @@ public class UserService {
         }
     }
 
+    // ******* 수정 필요 ********
+    // 1. mail 전송에서 오류가 발생한 경우에 대한 예외 처리 고민 필요
+    // 2. try-catch에서 exception 발생했을 때, 단순히 롤백만 하는게 아니라 뭔가 더 있으면 좋겠는데
     public void resetUserPassword(String nickname, String token) {
 
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
-            User user = verificationTokenService.findUser(token);
+            User user = verificationTokenService.findUserByToken(token);
 
             if (nickname.equals(user.getNickname())) {
                 String randomPassword = TemporaryPasswordGenerator.generateRandomPassword();
@@ -89,7 +95,7 @@ public class UserService {
 
                 userRepository.save(user);
 
-                sendTemporaryPasswordByEmail(user);
+                sendTemporaryPasswordByEmail(user.getEmail(), user.getPassword());
 
                 transactionManager.commit(status);
             }
@@ -99,21 +105,19 @@ public class UserService {
 
     }
 
-    private void sendTemporaryPasswordByEmail(User user) {
+    private void sendTemporaryPasswordByEmail(String toAddress, String password) {
 
-        // 이메일 설정
-        String toAddress = user.getEmail();
         String fromAddress = "hongkildong990@gmail.com";
         String subject = "Temporary Password Notification";
-        String content = "Hello,\n\nWe are sending you a temporary password.\n\nTemporary Password: " + user.getPassword() + "\n\nPlease be sure to change your password after logging in.\n\nThank you.";
+        String content = "Hello,\n\nWe are sending you a temporary password.\n\nTemporary Password: " + password + "\n\nPlease be sure to change your password after logging in.\n\nThank you.";
 
 
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(toAddress);
-        email.setFrom(fromAddress);
-        email.setSubject(subject);
-        email.setText(content);
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(toAddress);
+        mail.setFrom(fromAddress);
+        mail.setSubject(subject);
+        mail.setText(content);
 
-        mailSender.send(email);
+        mailSender.send(mail);
     }
 }
