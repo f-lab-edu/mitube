@@ -71,14 +71,17 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @PostMapping("/verifyAccountSMS")
-    public ResponseEntity<?> checkSMSVerificationCode(@RequestBody VerificationDto verificationDto) {
+    public ResponseEntity<CommonResponse<?>> checkSMSVerificationCode(@RequestBody VerificationDto verificationDto) {
         LocalDateTime current = java.time.LocalDateTime.now();
 
         verificationDto.check();
 
         String token = smsService.matchSMS(verificationDto.getPhoneNumber(), verificationDto.getToken(), current);
 
-        return ResponseEntity.ok().body(token);
+        CommonResponse<String> commonResponse = new CommonResponse<>();
+        commonResponse.setBody(token);
+
+        return ResponseEntity.ok().body(commonResponse);
     }
 
 
@@ -90,11 +93,14 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @PostMapping("/help/findId")
-    public ResponseEntity<?> findId(@RequestBody VerificationDto verificationDto) {
+    public ResponseEntity<CommonResponse<?>> findId(@RequestBody VerificationDto verificationDto) {
 
         String nickname = verificationTokenService.findUserNicknameByToken(verificationDto.getToken());
 
-        return ResponseEntity.ok().body(nickname);
+        CommonResponse<String> commonResponse = new CommonResponse<>();
+        commonResponse.setBody(nickname);
+
+        return ResponseEntity.ok().body(commonResponse);
     }
 
 
