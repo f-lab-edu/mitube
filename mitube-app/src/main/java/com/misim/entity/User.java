@@ -1,36 +1,52 @@
 package com.misim.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
-@Table(name = "users")
+@Table(name = "users", indexes = {@Index(name = "idx_email", columnList = "email", unique = true), @Index(name = "idx_nickname", columnList = "nickname", unique = true)})
 @NoArgsConstructor
-public class User {
+public class User extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 32)
     private String email;
 
+    @Column(length = 60)
+    @Setter
     private String password;
 
+    @Column(length = 20)
     private String nickname;
 
-    private LocalDateTime createDate;
+    private String phoneNumber;
 
-    private LocalDateTime modifyDate;
+    private boolean isEnabled;
+
+    @OneToMany(mappedBy = "user")
+    private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
 
     @Builder
-    public User(String email, String password, String nickname) {
+    public User(String email, String password, String nickname, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.createDate = LocalDateTime.now();
-        this.modifyDate = LocalDateTime.now();
+        this.phoneNumber = phoneNumber;
+        this.isEnabled = true;
+    }
+
+    public void addTermAgreements(TermAgreement termAgreement) {
+        this.termAgreements.add(termAgreement);
+
+        if (termAgreement.getUser() != this) {
+            termAgreement.setUser(this);
+        }
     }
 }
