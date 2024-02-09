@@ -24,8 +24,9 @@ public enum MitubeErrorCode implements ErrorCode{
     NOT_VERIFIED_SMS_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 인증되지 않았습니다.", 10204),
 
     NOT_FOUND_TERM(HttpStatus.BAD_REQUEST, "해당 약관을 찾을 수 없습니다.", 10300),
-    NOT_AGREE_MANDATORY_TERM(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.", 10301),
+    NOT_AGREE_REQUIRED_TERM(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.", 10301),
     CHECK_TERMS_UPDATE(HttpStatus.BAD_REQUEST, "약관의 수정 사항을 확인해보세요.", 10302),
+    NOT_MATCH_TERM_AND_TERM_AGREEMENT(HttpStatus.BAD_REQUEST, "약관과 약관 동의 사항이 일치하지 않습니다.", 10303),
 
     NOT_FOUND_CODE(HttpStatus.BAD_REQUEST, "해당 코드를 찾을 수 없습니다.", 10400),
     INVALID_CODE(HttpStatus.BAD_REQUEST, "코드 형식에 맞지 않습니다.", 10401),
@@ -38,8 +39,7 @@ public enum MitubeErrorCode implements ErrorCode{
 
     EMPTY_FILE(HttpStatus.BAD_REQUEST, "빈 파일입니다.", 10600),
 
-    UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 에러가 발생했습니다.", 99999),
-    ;
+    UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 에러가 발생했습니다.", 99999),;
 
     private final HttpStatus httpStatus;
     private final String message;
