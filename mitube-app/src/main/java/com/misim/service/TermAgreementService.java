@@ -25,7 +25,7 @@ public class TermAgreementService {
 
         // Term api에서 전체 약관 정보 전달 시 사용하는 레포지토리 메소드가 아래의 메소드와 같아서 동일한 순서임이 보장된다.
         // 인자로 받은 agreements와 terms의 순서가 같다.
-        List<Term> terms = termRepository.findTermGroupByTitle();
+        List<Term> terms = termRepository.findTermGroupByTermGroupAndMaxVersion();
 
         if (agreements.size() != terms.size()) {
             throw new MitubeException(MitubeErrorCode.CHECK_TERMS_UPDATE);

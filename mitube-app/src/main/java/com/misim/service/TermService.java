@@ -2,6 +2,8 @@ package com.misim.service;
 
 import com.misim.controller.model.TermResponseDto;
 import com.misim.entity.Term;
+import com.misim.exception.MitubeErrorCode;
+import com.misim.exception.MitubeException;
 import com.misim.repository.TermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class TermService {
 
     public List<TermResponseDto> getAllTerms() {
 
-        List<Term> terms = termRepository.findTermGroupByTitle();
+        List<Term> terms = termRepository.findTermGroupByTermGroupAndMaxVersion();
 
         return terms.stream()
                 .map(term -> TermResponseDto.builder()
@@ -30,12 +32,36 @@ public class TermService {
 
     public TermResponseDto getTermByTitle(String title) {
 
-        Term term = termRepository.findTermByTitle(title);
+        Term term = termRepository.findTermByTitleAndMaxVersion(title);
 
         return TermResponseDto.builder()
                 .title(term.getTitle())
                 .content(term.getContent())
                 .isRequired(term.getIsRequired())
                 .build();
+    }
+
+    public void checkTerms(List<String> checkedTermTitles) {
+
+        List<Term> terms = termRepository.findTermGroupByTermGroupAndMaxVersion();
+        
+        int cnt = 0;
+        
+        // db에서 조회한 약관 중 필수 약관이 유저가 동의한 약관 제목에 존재하는지 확인
+        // 한 번의 for 반복문에서 cnt도 처리하기 위해 포함관계를 확인한 후 필수 약관인지 확인한다.
+        for (Term t : terms) {
+            if (checkedTermTitles.contains(t.getTitle())) {
+                cnt++;
+            } else {
+                if (t.getIsRequired()) {
+                    throw new MitubeException(MitubeErrorCode.NOT_AGREE_REQUIRED_TERM);
+                }
+            }
+        }
+
+        // 유저가 동의한 약관 제목이 db에서 조회한 약관 목록에 모두 포함되는지 확인
+        if (checkedTermTitles.size() != cnt) {
+            throw new MitubeException(MitubeErrorCode.NOT_MATCH_TERM_AND_TERM_AGREEMENT);
+        }
     }
 }
