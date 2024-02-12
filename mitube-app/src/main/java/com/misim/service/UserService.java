@@ -1,7 +1,9 @@
 package com.misim.service;
 
 import com.misim.controller.model.UserDto;
+import com.misim.entity.TermAgreement;
 import com.misim.entity.User;
+import com.misim.entity.VerificationToken;
 import com.misim.exception.MitubeException;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.repository.UserRepository;
@@ -14,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -24,6 +23,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TermService termService;
     private final TermAgreementService termAgreementService;
     private final SmsService smsService;
     private final VerificationTokenService verificationTokenService;
@@ -33,8 +33,11 @@ public class UserService {
 
 
     // ******* 수정 필요 ********
-    // try-catch에서 exception 발생했을 때, 단순히 롤백만 하는게 아니라 뭔가 더 있으면 좋겠는데
+    // 무조건 user.save()가 가장 마지막에 실행되도록 수정해야 한다.
     public void registerUser(UserDto userDto) {
+
+        // 약관 확인 - checkTerms 내부에서 예외 발생
+        termService.checkTerms(userDto.getCheckedTermTitles());
 
         // 본인 인증 확인
         if (!smsService.checkVerification(userDto.getToken())) {
@@ -45,43 +48,37 @@ public class UserService {
         if (userRepository.existsByNickname(userDto.getNickname())) {
             throw new MitubeException(MitubeErrorCode.EXIST_NICKNAME);
         }
+
         // 이메일 중복 확인
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new MitubeException(MitubeErrorCode.EXIST_EMAIL);
         }
 
-        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        // userDto -> user로 변환 (비밀번호 암호화)
+        User user = User.builder()
+                .nickname(userDto.getNickname())
+                .password(passwordEncoder.encode(userDto.getPassword()))
+                .email(userDto.getEmail())
+                .phoneNumber(userDto.getPhoneNumber())
+                .build();
 
-        try {
-            // userDto -> user로 변환 (비밀번호 암호화)
-            User user = User.builder()
-                    .nickname(userDto.getNickname())
-                    .password(passwordEncoder.encode(userDto.getPassword()))
-                    .email(userDto.getEmail())
-                    .phoneNumber(userDto.getPhoneNumber())
-                    .build();
+        // 유저 정보와 약관 동의 정보 연결
+        List<TermAgreement> termAgreements = termAgreementService.getTermAgreements(user, userDto.getCheckedTermTitles());
 
+        user.setTermAgreements(termAgreements);
 
-            // 유저 정보 저장
-            userRepository.save(user);
+        // 유저 정보와 본인 인증 정보 연결
+        VerificationToken verificationToken = verificationTokenService.getVerificationToken(user, userDto.getToken());
 
-            // 약관 동의 정보 연결
-            List<Boolean> agreements = new ArrayList<>(Arrays.asList(userDto.isAgreeRequiredTerm1(), userDto.isAgreeRequiredTerm2(), userDto.isAgreeOptionalTerm1(), userDto.isAgreeOptionalTerm2()));
+        user.setVerificationToken(verificationToken);
 
-            termAgreementService.associateTermAgreements(user, agreements);
-
-            // 본인 인증 정보와 유저 정보 연결
-            verificationTokenService.associateVerificationToken(user, userDto.getToken());
-
-            transactionManager.commit(status);
-        } catch (Exception e) {
-            transactionManager.rollback(status);
-        }
+        // 유저 정보 저장
+        userRepository.save(user);
     }
 
     // ******* 수정 필요 ********
     // 1. mail 전송에서 오류가 발생한 경우에 대한 예외 처리 고민 필요
-    // 2. try-catch에서 exception 발생했을 때, 단순히 롤백만 하는게 아니라 뭔가 더 있으면 좋겠는데
+    // 2. 트랜잭션 고민
     public void resetUserPassword(String nickname, String token) {
 
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());

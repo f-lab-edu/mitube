@@ -99,7 +99,7 @@ public class SmsService {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_CODE);
         }
 
-        if (smsVerification.getVerificationCode().equals(token)) {
+        if (!smsVerification.getVerificationCode().equals(token)) {
             throw new MitubeException(MitubeErrorCode.NOT_MATCH_CODE);
         }
 

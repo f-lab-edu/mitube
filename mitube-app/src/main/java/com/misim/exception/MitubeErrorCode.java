@@ -22,6 +22,7 @@ public enum MitubeErrorCode implements ErrorCode{
     EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "해당 토큰이 만료되었습니다.", 10202),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "토큰 형식에 맞지 않습니다.", 10203),
     NOT_VERIFIED_SMS_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 인증되지 않았습니다.", 10204),
+    USED_SMS_TOKEN(HttpStatus.BAD_REQUEST, "이미 사용된 토큰입니다.", 10205),
 
     NOT_FOUND_TERM(HttpStatus.BAD_REQUEST, "해당 약관을 찾을 수 없습니다.", 10300),
     NOT_AGREE_REQUIRED_TERM(HttpStatus.BAD_REQUEST, "필수 약관에 동의하지 않았습니다.", 10301),

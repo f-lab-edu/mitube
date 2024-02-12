@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -19,15 +20,16 @@ public class TermAgreement extends BaseTimeEntity{
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "TERM_ID")
     private Term term;
 
     private boolean isAgree;
 
     @Builder
-    public TermAgreement(Boolean isAgree) {
+    public TermAgreement(Boolean isAgree, Term term) {
         this.isAgree = isAgree;
+        this.term = term;
     }
 
     public void setUser(User user) {
@@ -35,14 +37,6 @@ public class TermAgreement extends BaseTimeEntity{
 
         if (!user.getTermAgreements().contains(this)) {
             user.getTermAgreements().add(this);
-        }
-    }
-
-    public void setTerm(Term term) {
-        this.term = term;
-
-        if (!term.getTermAgreements().contains(this)) {
-            term.getTermAgreements().add(this);
         }
     }
 }

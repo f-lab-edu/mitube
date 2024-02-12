@@ -29,9 +29,6 @@ public class Term {
 
     private Integer termGroup;
 
-    @OneToMany(mappedBy = "term")
-    private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
-
     @Builder
     public Term(String title, String content, Boolean isRequired, Integer version, Integer termGroup) {
         this.title = title;
@@ -39,13 +36,5 @@ public class Term {
         this.isRequired = isRequired;
         this.version = version;
         this.termGroup = termGroup;
-    }
-
-    public void addTermAgreements(TermAgreement termAgreement) {
-        this.termAgreements.add(termAgreement);
-
-        if (termAgreement.getTerm() != this) {
-            termAgreement.setTerm(this);
-        }
     }
 }

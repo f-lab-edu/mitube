@@ -18,21 +18,6 @@ public class VerificationTokenService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final SmsVerificationRepository smsVerificationRepository;
 
-
-    public void associateVerificationToken(User user, String token) {
-
-        SmsVerification smsVerification = smsVerificationRepository
-                .findById(Base64Convertor.decode(token))
-                .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
-
-        VerificationToken verificationToken = VerificationToken.builder()
-                .user(user)
-                .smsVerification(smsVerification)
-                .build();
-
-        verificationTokenRepository.save(verificationToken);
-    }
-
     public User findUserByToken(String token) {
 
         Long id = Base64Convertor.decode(token);
@@ -57,5 +42,21 @@ public class VerificationTokenService {
         VerificationToken verificationToken = verificationTokenRepository.findVerificationTokenBySmsVerificationId(id);
 
         return verificationToken.getUser().getNickname();
+    }
+
+    public VerificationToken getVerificationToken(User user, String token) {
+
+        Long id = Base64Convertor.decode(token);
+
+        SmsVerification smsVerification = smsVerificationRepository.findById(id).orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_SMS_TOKEN));
+
+        if (verificationTokenRepository.existsVerificationTokenBySmsVerificationId(id)) {
+            throw new MitubeException(MitubeErrorCode.USED_SMS_TOKEN);
+        }
+
+        return VerificationToken.builder()
+                .user(user)
+                .smsVerification(smsVerification)
+                .build();
     }
 }
