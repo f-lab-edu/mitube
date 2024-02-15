@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -20,7 +19,7 @@ public class TermAgreement extends BaseTimeEntity{
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "TERM_ID")
     private Term term;
 

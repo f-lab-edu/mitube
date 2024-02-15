@@ -56,7 +56,7 @@ public class UserDto implements Checker{
         }
 
         if (token == null) {
-            throw new MitubeException(MitubeErrorCode.INVALID_TOKEN);
+            throw new MitubeException(MitubeErrorCode.INVALID_SMS_TOKEN);
         }
 
         // 사이즈 체크
