@@ -48,6 +48,7 @@ public class VideoService {
         try {
             file.transferTo(saveFilePath);
         } catch (IOException e) {
+            e.fillInStackTrace();
             throw new MitubeException(MitubeErrorCode.NOT_CREATED_FILE);
         }
 

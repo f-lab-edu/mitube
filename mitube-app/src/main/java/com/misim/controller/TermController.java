@@ -1,6 +1,8 @@
 package com.misim.controller;
 
-import com.misim.controller.model.TermResponseDto;
+import com.misim.controller.model.Response.TermDetailResponse;
+import com.misim.controller.model.Response.TermListResponse;
+import com.misim.controller.model.Response.TermResponse;
 import com.misim.exception.CommonResponse;
 import com.misim.service.TermService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,14 +32,14 @@ public class TermController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전체 약관 정보 전달 성공.")})
     @GetMapping("/agree")
-    public ResponseEntity<CommonResponse<?>> getTerms() {
+    public CommonResponse<TermListResponse> getTerms() {
 
-        List<TermResponseDto> terms = termService.getAllTerms();
+        TermListResponse terms = termService.getAllTerms();
 
-        CommonResponse<List<TermResponseDto>> commonResponse = new CommonResponse<>();
-        commonResponse.setBody(terms);
-
-        return ResponseEntity.ok().body(commonResponse);
+        return CommonResponse
+                .<TermListResponse>builder()
+                .body(terms)
+                .build();
     }
     
     // 자세히 버튼 클릭 시 해당 약관에 대한 자세한 내용 제시
@@ -47,13 +49,13 @@ public class TermController {
             @ApiResponse(responseCode = "400", description = "제목 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @GetMapping("/policy")
-    public ResponseEntity<CommonResponse<?>> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
+    public CommonResponse<TermResponse> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
 
-        TermResponseDto termResponseDto = termService.getTermByTitle(title);
+        TermDetailResponse response = termService.getTermByTitle(title);
 
-        CommonResponse<TermResponseDto> commonResponse = new CommonResponse<>();
-        commonResponse.setBody(termResponseDto);
-
-        return ResponseEntity.ok().body(commonResponse);
+        return CommonResponse
+                .<TermResponse>builder()
+                .body(response)
+                .build();
     }
 }

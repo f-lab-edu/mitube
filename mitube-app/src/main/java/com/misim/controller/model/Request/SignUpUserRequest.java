@@ -1,5 +1,6 @@
-package com.misim.controller.model;
+package com.misim.controller.model.Request;
 
+import com.misim.controller.model.Checker;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.util.Validator;
@@ -11,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(description = "유저 DTO")
-public class UserDto implements Checker{
+public class SignUpUserRequest implements Checker {
 
     @Schema(name = "email", description = "User 이메일", example = "hongkildong@example.com", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;

@@ -1,6 +1,8 @@
 package com.misim.service;
 
-import com.misim.controller.model.TermResponseDto;
+import com.misim.controller.model.Response.TermDetailResponse;
+import com.misim.controller.model.Response.TermListResponse;
+import com.misim.controller.model.Response.TermResponse;
 import com.misim.entity.Term;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
@@ -18,27 +20,31 @@ public class TermService {
     private final TermRepository termRepository;
 
 
-    public List<TermResponseDto> getAllTerms() {
+    public TermListResponse getAllTerms() {
 
         List<Term> terms = termRepository.findTermGroupByTermGroupAndMaxVersion();
 
-        return terms.stream()
-                .map(term -> TermResponseDto.builder()
+        List <TermResponse> termResponses = terms.stream()
+                .map(term -> TermResponse.builder()
                         .title(term.getTitle())
                         .isRequired(term.getIsRequired())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
+
+        return TermListResponse
+                .builder()
+                .termResponseList(termResponses)
+                .build();
     }
 
-    public TermResponseDto getTermByTitle(String title) {
+    public TermDetailResponse getTermByTitle(String title) {
 
         Term term = termRepository.findTermByTitleAndMaxVersion(title);
 
-        return TermResponseDto.builder()
-                .title(term.getTitle())
-                .content(term.getContent())
-                .isRequired(term.getIsRequired())
-                .build();
+        TermDetailResponse response = new TermDetailResponse(term.getTitle(), term.getIsRequired());
+        response.setContent(term.getContent());
+
+        return response;
     }
 
     public void checkTerms(List<String> checkedTermTitles) {

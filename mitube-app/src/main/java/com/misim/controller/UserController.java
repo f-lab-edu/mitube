@@ -1,7 +1,8 @@
 package com.misim.controller;
 
-import com.misim.controller.model.VerificationDto;
-import com.misim.controller.model.UserDto;
+import com.misim.controller.model.Request.*;
+import com.misim.controller.model.Response.FindNicknameResponse;
+import com.misim.controller.model.Response.VerifySMSResponse;
 import com.misim.exception.CommonResponse;
 import com.misim.service.SmsService;
 import com.misim.service.UserService;
@@ -9,7 +10,6 @@ import com.misim.service.VerificationTokenService;
 import com.misim.util.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -42,13 +41,13 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "이미 가입된 유저입니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @PostMapping("/signup")
-    public void signupUser(@RequestBody UserDto userDto) {
+    public void signupUser(@RequestBody SignUpUserRequest signUpUserRequest) {
 
         // 유저 데이터 검사 - invalid인 경우 exception 발생
-        userDto.check();
+        signUpUserRequest.check();
 
         // 유저 정보 등록
-        userService.registerUser(userDto);
+        userService.registerUser(signUpUserRequest);
     }
 
     // 본인 인증
@@ -58,10 +57,10 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @GetMapping("/sendVerificationBySMS")
-    public void sendSMSVerificationCode(@RequestParam @Parameter(description = "전화번호", in = ParameterIn.QUERY, example = "01012345678") String phoneNumber) {
-        Validator.validatePhoneNumber(phoneNumber);
+    public void sendSMSVerificationCode(@RequestParam SendSMSRequest request) {
+        Validator.validatePhoneNumber(request.getPhoneNumber());
 
-        smsService.sendSMS(phoneNumber);
+        smsService.sendSMS(request.getPhoneNumber());
     }
 
     @Operation(summary = "SMS 인증 코드 확인", description = "전달받은 인증 코드를 확인합니다..")
@@ -71,17 +70,17 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @PostMapping("/verifyAccountSMS")
-    public ResponseEntity<CommonResponse<?>> checkSMSVerificationCode(@RequestBody VerificationDto verificationDto) {
+    public CommonResponse<VerifySMSResponse> checkSMSVerificationCode(@RequestBody VerifySMSRequest request) {
         LocalDateTime current = java.time.LocalDateTime.now();
 
-        verificationDto.check();
+        request.check();
 
-        String token = smsService.matchSMS(verificationDto.getPhoneNumber(), verificationDto.getToken(), current);
+        VerifySMSResponse response = smsService.matchSMS(request.getPhoneNumber(), request.getToken(), current);
 
-        CommonResponse<String> commonResponse = new CommonResponse<>();
-        commonResponse.setBody(token);
-
-        return ResponseEntity.ok().body(commonResponse);
+        return CommonResponse
+                .<VerifySMSResponse>builder()
+                .body(response)
+                .build();
     }
 
 
@@ -92,15 +91,17 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "아이디 찾기 성공."),
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
-    @PostMapping("/help/findId")
-    public ResponseEntity<CommonResponse<?>> findId(@RequestBody VerificationDto verificationDto) {
+    @PostMapping("/nickname/find")
+    public CommonResponse<FindNicknameResponse> findNickname(@RequestBody FindNicknameRequest request) {
 
-        String nickname = verificationTokenService.findUserNicknameByToken(verificationDto.getToken());
+        request.check();
 
-        CommonResponse<String> commonResponse = new CommonResponse<>();
-        commonResponse.setBody(nickname);
+        FindNicknameResponse response = verificationTokenService.findUserNicknameByToken(request.getToken());
 
-        return ResponseEntity.ok().body(commonResponse);
+        return CommonResponse
+                .<FindNicknameResponse>builder()
+                .body(response)
+                .build();
     }
 
 
@@ -112,9 +113,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @PostMapping("/help/resetPassword")
-    public void resetPassword(@RequestBody VerificationDto verificationDto) {
+    public void resetPassword(@RequestBody ResetPasswordRequest request) {
 
-        userService.resetUserPassword(verificationDto.getNickname(), verificationDto.getToken());
+        userService.resetUserPassword(request.getNickname(), request.getToken());
     }
     
     

@@ -1,6 +1,5 @@
 package com.misim.controller;
 
-import com.misim.controller.model.TermResponseDto;
 import com.misim.controller.model.VideoDto;
 import com.misim.exception.CommonResponse;
 import com.misim.exception.MitubeErrorCode;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/videos")
@@ -23,7 +20,7 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping("/upload")
-    public ResponseEntity<CommonResponse> uploadVideos(MultipartFile file) {
+    public ResponseEntity<CommonResponse<String>> uploadVideos(MultipartFile file) {
 
         // 파일 검사
         checkFile(file);

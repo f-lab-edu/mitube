@@ -15,12 +15,6 @@ public class VerificationDto implements Checker{
     @Schema(name = "token", description = "토큰", example = "AIHR==", requiredMode = Schema.RequiredMode.REQUIRED)
     private String token;
 
-    @Schema(name = "nickname", description = "닉네임", example = "hongkildong", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String nickname;
-
-    @Schema(name = "phoneNumber", description = "전화번호", example = "01012345678==", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String phoneNumber;
-
     @Override
     public void check() {
 
@@ -28,23 +22,10 @@ public class VerificationDto implements Checker{
             throw new MitubeException(MitubeErrorCode.INVALID_CODE);
         }
 
-        if (nickname == null) {
-            throw new MitubeException(MitubeErrorCode.INVALID_NICKNAME);
-        }
-
-        if (phoneNumber == null) {
-            throw new MitubeException(MitubeErrorCode.INVALID_PHONENUMBER);
-        }
-
         if (!(!token.isEmpty() && token.length() <= 6)) {
             throw new MitubeException(MitubeErrorCode.INVALID_CODE);
         }
 
-        if (!(phoneNumber.length() == 11)) {
-            throw new MitubeException(MitubeErrorCode.INVALID_PHONENUMBER);
-        }
-
         Validator.validateCode(token);
-        Validator.validatePhoneNumber(phoneNumber);
     }
 }

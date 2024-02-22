@@ -1,5 +1,6 @@
 package com.misim.service;
 
+import com.misim.controller.model.Response.FindNicknameResponse;
 import com.misim.entity.SmsVerification;
 import com.misim.entity.User;
 import com.misim.entity.VerificationToken;
@@ -31,7 +32,7 @@ public class VerificationTokenService {
         return verificationToken.getUser();
     }
 
-    public String findUserNicknameByToken(String token) {
+    public FindNicknameResponse findUserNicknameByToken(String token) {
 
         Long id = Base64Convertor.decode(token);
 
@@ -41,7 +42,10 @@ public class VerificationTokenService {
 
         VerificationToken verificationToken = verificationTokenRepository.findVerificationTokenBySmsVerificationId(id);
 
-        return verificationToken.getUser().getNickname();
+        FindNicknameResponse response = new FindNicknameResponse();
+        response.setNickname(verificationToken.getUser().getNickname());
+
+        return response;
     }
 
     public VerificationToken getVerificationToken(User user, String token) {

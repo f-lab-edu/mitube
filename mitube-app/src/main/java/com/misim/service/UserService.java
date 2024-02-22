@@ -1,6 +1,6 @@
 package com.misim.service;
 
-import com.misim.controller.model.UserDto;
+import com.misim.controller.model.Request.SignUpUserRequest;
 import com.misim.entity.TermAgreement;
 import com.misim.entity.User;
 import com.misim.entity.VerificationToken;
@@ -34,41 +34,41 @@ public class UserService {
 
     // ******* 수정 필요 ********
     // 무조건 user.save()가 가장 마지막에 실행되도록 수정해야 한다.
-    public void registerUser(UserDto userDto) {
+    public void registerUser(SignUpUserRequest signUpUserRequest) {
 
         // 약관 확인 - checkTerms 내부에서 예외 발생
-        termService.checkTerms(userDto.getCheckedTermTitles());
+        termService.checkTerms(signUpUserRequest.getCheckedTermTitles());
 
         // 본인 인증 확인
-        if (!smsService.checkVerification(userDto.getToken())) {
+        if (!smsService.checkVerification(signUpUserRequest.getToken())) {
             throw new MitubeException(MitubeErrorCode.NOT_VERIFIED_SMS_TOKEN);
         }
 
         // 닉네임 중복 확인
-        if (userRepository.existsByNickname(userDto.getNickname())) {
+        if (userRepository.existsByNickname(signUpUserRequest.getNickname())) {
             throw new MitubeException(MitubeErrorCode.EXIST_NICKNAME);
         }
 
         // 이메일 중복 확인
-        if (userRepository.existsByEmail(userDto.getEmail())) {
+        if (userRepository.existsByEmail(signUpUserRequest.getEmail())) {
             throw new MitubeException(MitubeErrorCode.EXIST_EMAIL);
         }
 
         // userDto -> user로 변환 (비밀번호 암호화)
         User user = User.builder()
-                .nickname(userDto.getNickname())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .email(userDto.getEmail())
-                .phoneNumber(userDto.getPhoneNumber())
+                .nickname(signUpUserRequest.getNickname())
+                .password(passwordEncoder.encode(signUpUserRequest.getPassword()))
+                .email(signUpUserRequest.getEmail())
+                .phoneNumber(signUpUserRequest.getPhoneNumber())
                 .build();
 
         // 유저 정보와 약관 동의 정보 연결
-        List<TermAgreement> termAgreements = termAgreementService.getTermAgreements(user, userDto.getCheckedTermTitles());
+        List<TermAgreement> termAgreements = termAgreementService.getTermAgreements(user, signUpUserRequest.getCheckedTermTitles());
 
         user.setTermAgreements(termAgreements);
 
         // 유저 정보와 본인 인증 정보 연결
-        VerificationToken verificationToken = verificationTokenService.getVerificationToken(user, userDto.getToken());
+        VerificationToken verificationToken = verificationTokenService.getVerificationToken(user, signUpUserRequest.getToken());
 
         user.setVerificationToken(verificationToken);
 
