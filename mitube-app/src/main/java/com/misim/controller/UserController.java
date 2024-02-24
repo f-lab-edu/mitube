@@ -7,6 +7,7 @@ import com.misim.exception.CommonResponse;
 import com.misim.service.SmsService;
 import com.misim.service.UserService;
 import com.misim.service.VerificationTokenService;
+import com.misim.util.TimeUtil;
 import com.misim.util.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,8 +57,8 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "SMS 인증 코드 발송 성공."),
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
-    @GetMapping("/sendVerificationBySMS")
-    public void sendSMSVerificationCode(@RequestParam SendSMSRequest request) {
+    @PostMapping("/sendVerificationBySMS")
+    public void sendSMSVerificationCode(@RequestBody SendSMSRequest request) {
         Validator.validatePhoneNumber(request.getPhoneNumber());
 
         smsService.sendSMS(request.getPhoneNumber());
@@ -71,7 +72,7 @@ public class UserController {
     })
     @PostMapping("/verifyAccountSMS")
     public CommonResponse<VerifySMSResponse> checkSMSVerificationCode(@RequestBody VerifySMSRequest request) {
-        LocalDateTime current = java.time.LocalDateTime.now();
+        LocalDateTime current = TimeUtil.getNow();
 
         request.check();
 
