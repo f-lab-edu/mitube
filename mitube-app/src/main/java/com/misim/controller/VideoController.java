@@ -1,15 +1,13 @@
 package com.misim.controller;
 
+import com.misim.controller.model.Response.UploadVideosResponse;
 import com.misim.controller.model.VideoDto;
 import com.misim.exception.CommonResponse;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.service.VideoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -20,7 +18,7 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping("/upload")
-    public ResponseEntity<CommonResponse<String>> uploadVideos(MultipartFile file) {
+    public CommonResponse<UploadVideosResponse> uploadVideos(@RequestParam MultipartFile file) {
 
         // 파일 검사
         checkFile(file);
@@ -28,10 +26,13 @@ public class VideoController {
         // 비디오 업로드
         String id = videoService.uploadVideos(file);
 
-        CommonResponse<String> commonResponse = new CommonResponse<>();
-        commonResponse.setBody(id);
+        UploadVideosResponse uploadVideosResponse = new UploadVideosResponse();
+        uploadVideosResponse.setId(id);
 
-        return ResponseEntity.ok().body(commonResponse);
+        return CommonResponse
+                .<UploadVideosResponse>builder()
+                .body(uploadVideosResponse)
+                .build();
     }
 
     private void checkFile(MultipartFile file) {
@@ -39,14 +40,10 @@ public class VideoController {
         if (file == null || file.isEmpty()) {
             throw new MitubeException(MitubeErrorCode.EMPTY_FILE);
         }
-
-        if (!file.getContentType().startsWith("video")) {
-            throw new MitubeException(MitubeErrorCode.NOT_VIDEO_FILE);
-        }
     }
 
     @PostMapping("/create")
-    public void createVideos(VideoDto videoDto) {
+    public void createVideos(@RequestBody VideoDto videoDto) {
 
         // 파일 확인
         videoDto.check();
