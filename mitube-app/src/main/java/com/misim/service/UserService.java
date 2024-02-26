@@ -32,8 +32,6 @@ public class UserService {
     private final PlatformTransactionManager transactionManager;
 
 
-    // ******* 수정 필요 ********
-    // 무조건 user.save()가 가장 마지막에 실행되도록 수정해야 한다.
     public void registerUser(SignUpUserRequest signUpUserRequest) {
 
         // 약관 확인 - checkTerms 내부에서 예외 발생
@@ -78,7 +76,6 @@ public class UserService {
 
     // ******* 수정 필요 ********
     // 1. mail 전송에서 오류가 발생한 경우에 대한 예외 처리 고민 필요
-    // 2. 트랜잭션 고민
     public void resetUserPassword(String nickname, String token) {
 
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
