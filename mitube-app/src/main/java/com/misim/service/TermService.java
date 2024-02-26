@@ -41,8 +41,12 @@ public class TermService {
 
         Term term = termRepository.findTermByTitleAndMaxVersion(title);
 
-        TermDetailResponse response = new TermDetailResponse(term.getTitle(), term.getIsRequired());
-        response.setContent(term.getContent());
+        TermDetailResponse response = TermDetailResponse
+                .detailBuidler()
+                .title(term.getTitle())
+                .content(term.getContent())
+                .isRequired(term.getIsRequired())
+                .build();
 
         return response;
     }

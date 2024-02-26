@@ -29,7 +29,7 @@ public class SignUpUserRequest implements Checker {
     @Schema(name = "phoneNumber", description = "User 전화번호", example = "01012345678", requiredMode = Schema.RequiredMode.REQUIRED)
     private String phoneNumber;
 
-    @Schema(name = "token", description = "User 토큰", example = "AIHR==", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(name = "code", description = "User 토큰", example = "AIHR==", requiredMode = Schema.RequiredMode.REQUIRED)
     private String token;
 
     // 리스트

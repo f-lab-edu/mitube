@@ -12,20 +12,20 @@ import lombok.Setter;
 @Schema(description = "인증 관련 DTO")
 public class VerificationDto implements Checker{
 
-    @Schema(name = "token", description = "토큰", example = "AIHR==", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String token;
+    @Schema(name = "code", description = "코드", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String code;
 
     @Override
     public void check() {
 
-        if (token == null) {
+        if (code == null) {
             throw new MitubeException(MitubeErrorCode.INVALID_CODE);
         }
 
-        if (!(!token.isEmpty() && token.length() <= 6)) {
+        if (!(!code.isEmpty() && code.length() <= 6)) {
             throw new MitubeException(MitubeErrorCode.INVALID_CODE);
         }
 
-        Validator.validateCode(token);
+        Validator.validateCode(code);
     }
 }

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 @Getter
 @Setter
 public class TermDetailResponse extends TermResponse{
@@ -12,7 +11,9 @@ public class TermDetailResponse extends TermResponse{
     @Schema(description = "약관 내용")
     private String content;
 
-    public TermDetailResponse(String title, Boolean isRequired) {
+    @Builder(builderMethodName = "detailBuidler")
+    public TermDetailResponse(String title, Boolean isRequired, String content) {
         super(title, isRequired);
+        this.content = content;
     }
 }

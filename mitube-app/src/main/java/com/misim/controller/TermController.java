@@ -49,12 +49,12 @@ public class TermController {
             @ApiResponse(responseCode = "400", description = "제목 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @GetMapping("/policy")
-    public CommonResponse<TermResponse> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
+    public CommonResponse<TermDetailResponse> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
 
         TermDetailResponse response = termService.getTermByTitle(title);
 
         return CommonResponse
-                .<TermResponse>builder()
+                .<TermDetailResponse>builder()
                 .body(response)
                 .build();
     }

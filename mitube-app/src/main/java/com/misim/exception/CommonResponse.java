@@ -16,7 +16,8 @@ public class CommonResponse<T> {
     
     @Schema(description = "응답 메시지")
     private String message;
-    
+
+    // 에러시 null
     @Schema(description = "응답 데이터")
     private T body;
 

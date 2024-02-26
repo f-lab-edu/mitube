@@ -13,6 +13,8 @@ public class Validator {
     private static final Pattern codePattern = Pattern.compile("\\d{6}");
     private static final Pattern phoneNumberPattern = Pattern.compile("^010\\d{4}\\d{4}$");
 
+    private static final Pattern localDateTimePattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{9}$");
+
     public static void validateEmail(String email) {
         Matcher matcher = emailPattern.matcher(email);
 
@@ -48,6 +50,14 @@ public class Validator {
 
         if (!matcher.matches()) {
             throw new MitubeException(MitubeErrorCode.INVALID_PHONENUMBER);
+        }
+    }
+
+    public static void validateLocalDateTime(String requestTime) {
+        Matcher matcher = localDateTimePattern.matcher(requestTime);
+
+        if (!matcher.matches()) {
+            throw new MitubeException(MitubeErrorCode.INVALID_LOCAL_DATETIME);
         }
     }
 }

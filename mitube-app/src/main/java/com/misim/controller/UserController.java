@@ -72,11 +72,12 @@ public class UserController {
     })
     @PostMapping("/verifyAccountSMS")
     public CommonResponse<VerifySMSResponse> checkSMSVerificationCode(@RequestBody VerifySMSRequest request) {
-        LocalDateTime current = TimeUtil.getNow();
 
         request.check();
 
-        VerifySMSResponse response = smsService.matchSMS(request.getPhoneNumber(), request.getToken(), current);
+        VerifySMSResponse response = smsService.matchSMS(request.getPhoneNumber(),
+                request.getCode(),
+                TimeUtil.parseStringToLocalDateTime(request.getRequestTime()));
 
         return CommonResponse
                 .<VerifySMSResponse>builder()
@@ -116,7 +117,7 @@ public class UserController {
     @PostMapping("/help/resetPassword")
     public void resetPassword(@RequestBody ResetPasswordRequest request) {
 
-        userService.resetUserPassword(request.getNickname(), request.getToken());
+        userService.resetUserPassword(request.getNickname(), request.getCode());
     }
     
     
