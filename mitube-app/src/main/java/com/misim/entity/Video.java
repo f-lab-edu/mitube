@@ -28,10 +28,15 @@ public class Video extends BaseTimeEntity{
     @Setter
     private VideoFile videoFile;
 
+    private Integer categoryId;
+
+    private Long views;
+
     @Builder
-    public Video(Long id, String title, String description) {
-        this.id = id;
+    public Video(String title, String description, Integer categoryId, Long views) {
         this.title = title;
         this.description = description;
+        this.categoryId = categoryId;
+        this.views = views;
     }
 }

@@ -3,6 +3,7 @@ package com.misim.service;
 import com.misim.controller.model.VideoDto;
 import com.misim.entity.User;
 import com.misim.entity.Video;
+import com.misim.entity.VideoCategory;
 import com.misim.entity.VideoFile;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
@@ -92,9 +93,16 @@ public class VideoService {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
         }
 
+        // 비디오 카테고리 확인
+        if (!VideoCategory.existByCode(videoDto.getCategoryId())) {
+            throw new MitubeException(MitubeErrorCode.INVALID_CATEGORY);
+        }
+
         Video video = Video.builder()
                 .title(videoDto.getTitle())
                 .description(videoDto.getDescription())
+                .categoryId(videoDto.getCategoryId())
+                .views(0L)
                 .build();
 
         // 비디오 파일 연결

@@ -15,6 +15,7 @@ public class VideoDto implements Checker{
     private String description;
     private String nickname;
     private String token;
+    private Integer categoryId;
 
     @Override
     public void check() {
@@ -34,6 +35,10 @@ public class VideoDto implements Checker{
 
         if (token == null) {
             throw new MitubeException(MitubeErrorCode.INVALID_VIDEO_TOKEN);
+        }
+
+        if (categoryId == null) {
+            throw new MitubeException(MitubeErrorCode.INVALID_CATEGORY);
         }
     }
 }
