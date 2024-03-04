@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -39,7 +40,8 @@ public class TermService {
 
     public TermDetailResponse getTermByTitle(String title) {
 
-        Term term = termRepository.findTermByTitleAndMaxVersion(title);
+        Term term = termRepository.findTermByTitleAndMaxVersion(title)
+                .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_TERM));
 
         TermDetailResponse response = TermDetailResponse
                 .detailBuidler()

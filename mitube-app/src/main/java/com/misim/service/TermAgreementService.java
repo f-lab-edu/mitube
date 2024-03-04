@@ -27,7 +27,8 @@ public class TermAgreementService {
         for (String title : checkedTermTitles) {
             TermAgreement agreement = TermAgreement.builder()
                     .isAgree(true)
-                    .term(termRepository.findTermByTitleAndMaxVersion(title))
+                    .term(termRepository.findTermByTitleAndMaxVersion(title)
+                            .orElseThrow(() -> new MitubeException(MitubeErrorCode.NOT_FOUND_TERM)))
                     .build();
 
             agreement.setUser(user);
