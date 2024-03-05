@@ -1,15 +1,14 @@
-package com.misim.controller.model;
+package com.misim.controller.model.Request;
 
+import com.misim.controller.model.Checker;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class VideoDto implements Checker{
+public class CreateVideoRequest implements Checker {
 
     private String title;
     private String description;

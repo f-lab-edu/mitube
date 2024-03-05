@@ -1,7 +1,7 @@
 package com.misim.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.misim.controller.model.VideoDto;
+import com.misim.controller.model.Request.CreateVideoRequest;
 import com.misim.service.VideoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,19 +59,19 @@ class VideoControllerTest {
     void createVideosByMocking() throws Exception {
 
         // mock 객체
-        VideoDto mockVideoDto = new VideoDto();
-        mockVideoDto.setTitle("test");
-        mockVideoDto.setDescription("test video");
-        mockVideoDto.setNickname("hongkildong");
-        mockVideoDto.setToken("MQ==");
-        mockVideoDto.setCategoryId(1);
+        CreateVideoRequest mockCreateVideoRequest = new CreateVideoRequest();
+        mockCreateVideoRequest.setTitle("test");
+        mockCreateVideoRequest.setDescription("test video");
+        mockCreateVideoRequest.setNickname("hongkildong");
+        mockCreateVideoRequest.setToken("MQ==");
+        mockCreateVideoRequest.setCategoryId(1);
 
-        doNothing().when(videoService).createVideos(mockVideoDto);
+        doNothing().when(videoService).createVideos(mockCreateVideoRequest);
 
         // 실행 결과 확인
         mockMvc.perform(post("/videos/create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(mockVideoDto))
+                        .content(objectMapper.writeValueAsString(mockCreateVideoRequest))
                         .with(csrf()))
                 .andExpect(status().isOk());
     }

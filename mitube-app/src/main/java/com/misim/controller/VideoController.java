@@ -1,7 +1,7 @@
 package com.misim.controller;
 
 import com.misim.controller.model.Response.UploadVideosResponse;
-import com.misim.controller.model.VideoDto;
+import com.misim.controller.model.Request.CreateVideoRequest;
 import com.misim.exception.CommonResponse;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
@@ -62,13 +62,13 @@ public class VideoController {
             @ApiResponse(responseCode = "400", description = "요청 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @PostMapping("/create")
-    public void createVideos(@RequestBody VideoDto videoDto) {
+    public void createVideos(@RequestBody CreateVideoRequest createVideoRequest) {
 
         // 파일 확인
-        videoDto.check();
+        createVideoRequest.check();
         
         // 비디오 생성
-        videoService.createVideos(videoDto);
+        videoService.createVideos(createVideoRequest);
     }
     
     // get video - 비디오 호출 정보(유저, 호출 시간) 로그 저장
