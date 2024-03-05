@@ -1,6 +1,7 @@
 package com.misim.service;
 
-import com.misim.controller.model.VideoDto;
+import com.misim.controller.model.Request.CreateVideoRequest;
+import com.misim.controller.model.Response.VideoResponse;
 import com.misim.entity.User;
 import com.misim.entity.Video;
 import com.misim.entity.VideoCategory;
@@ -23,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -79,9 +82,9 @@ public class VideoService {
         return File.separator + UUID.randomUUID().toString() + originalFilename;
     }
 
-    public void createVideos(VideoDto videoDto) {
+    public void createVideos(CreateVideoRequest createVideoRequest) {
 
-        Long videoFileId = Base64Convertor.decode(videoDto.getToken());
+        Long videoFileId = Base64Convertor.decode(createVideoRequest.getToken());
 
         // 비디오 파일 확인
         if (!videoFileRepository.existsById(videoFileId)) {
@@ -89,20 +92,21 @@ public class VideoService {
         }
 
         // 유저 확인
-        if (!userRepository.existsByNickname(videoDto.getNickname())) {
+        if (!userRepository.existsByNickname(createVideoRequest.getNickname())) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
         }
 
         // 비디오 카테고리 확인
-        if (!VideoCategory.existByCode(videoDto.getCategoryId())) {
+        if (!VideoCategory.existByCode(createVideoRequest.getCategoryId())) {
             throw new MitubeException(MitubeErrorCode.INVALID_CATEGORY);
         }
 
         Video video = Video.builder()
-                .title(videoDto.getTitle())
-                .description(videoDto.getDescription())
-                .categoryId(videoDto.getCategoryId())
+                .title(createVideoRequest.getTitle())
+                .description(createVideoRequest.getDescription())
+                .categoryId(createVideoRequest.getCategoryId())
                 .views(0L)
+                .thumbnailUrl("")
                 .build();
 
         // 비디오 파일 연결
@@ -112,11 +116,19 @@ public class VideoService {
         video.setVideoFile(videoFile);
 
         // 유저 연결
-        User user = userRepository.findByNickname(videoDto.getNickname());
+        User user = userRepository.findByNickname(createVideoRequest.getNickname());
 
         video.setUser(user);
 
         // 비디오 저장
         videoRepository.save(video);
+    }
+
+    public List<VideoResponse> getNewVideos() {
+        return new ArrayList<>();
+    }
+
+    public List<VideoResponse> getHotVideos() {
+        return new ArrayList<>();
     }
 }

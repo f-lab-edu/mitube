@@ -30,13 +30,18 @@ public class Video extends BaseTimeEntity{
 
     private Integer categoryId;
 
+    // 연관관계 설정 가능
     private Long views;
 
+    // 연관관계 설정 가능
+    private String thumbnailUrl;
+
     @Builder
-    public Video(String title, String description, Integer categoryId, Long views) {
+    public Video(String title, String description, Integer categoryId, Long views, String thumbnailUrl) {
         this.title = title;
         this.description = description;
         this.categoryId = categoryId;
         this.views = views;
+        this.thumbnailUrl = thumbnailUrl;
     }
 }
