@@ -5,9 +5,10 @@ import com.misim.exception.MitubeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class VideoDto implements Checker{
 
     private String title;

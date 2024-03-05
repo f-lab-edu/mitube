@@ -14,7 +14,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -36,7 +35,7 @@ class VideoControllerTest {
     private VideoService videoService;
 
     @Test
-    void uploadVideos() throws Exception {
+    void uploadVideosByMocking() throws Exception {
 
         // mock 객체
         MockMultipartFile file = new MockMultipartFile("file", "test file".getBytes());
@@ -57,14 +56,15 @@ class VideoControllerTest {
     }
 
     @Test
-    void createVideos() throws Exception {
+    void createVideosByMocking() throws Exception {
 
         // mock 객체
         VideoDto mockVideoDto = new VideoDto();
-        mockVideoDto.setTitle("file");
-        mockVideoDto.setDescription("test file");
+        mockVideoDto.setTitle("test");
+        mockVideoDto.setDescription("test video");
         mockVideoDto.setNickname("hongkildong");
         mockVideoDto.setToken("MQ==");
+        mockVideoDto.setCategoryId(1);
 
         doNothing().when(videoService).createVideos(mockVideoDto);
 

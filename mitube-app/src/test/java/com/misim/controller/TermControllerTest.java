@@ -31,7 +31,7 @@ class TermControllerTest {
     private TermService termService;
 
     @Test
-    public void testGetTerms() throws Exception {
+    public void testGetTermsByMocking() throws Exception {
 
         // mock 객체
         TermListResponse mockResponse = TermListResponse.builder()
@@ -54,7 +54,7 @@ class TermControllerTest {
     }
 
     @Test
-    public void testGetTermPolicy() throws Exception {
+    public void testGetTermPolicyByMocking() throws Exception {
 
         // mock 객체
         TermDetailResponse mockResponse = TermDetailResponse.detailBuidler()
