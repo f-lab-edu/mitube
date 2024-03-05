@@ -2,12 +2,12 @@ package com.misim.controller.model;
 
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class VideoDto implements Checker{
 
     private String title;
