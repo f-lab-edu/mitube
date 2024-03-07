@@ -31,4 +31,12 @@ public enum VideoCategory {
         return Arrays.stream(VideoCategory.values())
                 .anyMatch(c -> c.getCode() == code);
     }
+
+    public static String getNameByCode(int code) {
+        return Arrays.stream(VideoCategory.values())
+                .filter(c -> c.getCode() == code)
+                .findFirst()
+                .map(VideoCategory::getName)
+                .orElse(null);
+    }
 }

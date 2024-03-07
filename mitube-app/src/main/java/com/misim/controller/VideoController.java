@@ -72,6 +72,10 @@ public class VideoController {
     }
     
     // get video - 비디오 호출 정보(유저, 호출 시간) 로그 저장
-    // @GetMapping("/watch")
-    // public void watchVideo(@)
+    @GetMapping("/watch/{videoId}")
+    public void watchVideo(@PathVariable Long videoId, @RequestParam Long userId) {
+
+        // 비디오 호출 정보 저장
+        videoService.watchVideos(videoId, userId);
+    }
 }

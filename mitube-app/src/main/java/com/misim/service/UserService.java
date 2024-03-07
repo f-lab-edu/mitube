@@ -117,12 +117,4 @@ public class UserService {
 
         mailSender.send(mail);
     }
-
-    public List<VideoResponse> getWatchingVideos() {
-        return new ArrayList<>();
-    }
-
-    public List<VideoResponse> getSubscribingChannelNewVideos() {
-        return new ArrayList<>();
-    }
 }

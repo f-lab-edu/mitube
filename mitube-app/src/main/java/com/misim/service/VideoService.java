@@ -2,15 +2,13 @@ package com.misim.service;
 
 import com.misim.controller.model.Request.CreateVideoRequest;
 import com.misim.controller.model.Response.VideoResponse;
-import com.misim.entity.User;
-import com.misim.entity.Video;
-import com.misim.entity.VideoCategory;
-import com.misim.entity.VideoFile;
+import com.misim.entity.*;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.repository.UserRepository;
 import com.misim.repository.VideoFileRepository;
 import com.misim.repository.VideoRepository;
+import com.misim.repository.WatchingInfoRepository;
 import com.misim.util.Base64Convertor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +36,7 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final VideoFileRepository videoFileRepository;
     private final UserRepository userRepository;
+    private final WatchingInfoRepository watchingInfoRepository;
 
     public String uploadVideos(MultipartFile file) {
 
@@ -63,7 +62,7 @@ public class VideoService {
 
     private String makeFolder() {
 
-        String folderStr = UPLOAD_PATH + File.separator + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        String folderStr = UPLOAD_PATH + File.separator + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
 
         Path folder = Paths.get(folderStr);
 
@@ -79,7 +78,7 @@ public class VideoService {
     }
 
     private String createFileName(String originalFilename) {
-        return File.separator + UUID.randomUUID().toString() + originalFilename;
+        return UUID.randomUUID().toString() + "_" + originalFilename;
     }
 
     public void createVideos(CreateVideoRequest createVideoRequest) {
@@ -124,11 +123,82 @@ public class VideoService {
         videoRepository.save(video);
     }
 
+    public void watchVideos(Long videoId, Long userId) {
+
+        if (!videoRepository.existsById(videoId)) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_VIDEO);
+        }
+
+        WatchingInfo watchingInfo = WatchingInfo.builder()
+                .videoId(videoId)
+                .userId(userId)
+                .build();
+
+        watchingInfoRepository.save(watchingInfo);
+    }
+
     public List<VideoResponse> getNewVideos() {
-        return new ArrayList<>();
+        List<Video> videos = videoRepository.findAll();
+
+        return videos.stream()
+                .map(video -> VideoResponse.builder()
+                        .title(video.getTitle())
+                        .description(video.getDescription())
+                        .nickname(video.getUser().getNickname())
+                        .category(VideoCategory.getNameByCode(video.getCategoryId()))
+                        .videoUrl(video.getVideoFile().getPath())
+                        .views(video.getViews())
+                        .thumbnailUrl(video.getThumbnailUrl())
+                        .build())
+                .toList();
     }
 
     public List<VideoResponse> getHotVideos() {
-        return new ArrayList<>();
+
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findHotWatchingInfo();
+
+        return getVideoResponseByWatchingInfo(watchingInfos);
+    }
+
+    public List<VideoResponse> getWatchingVideos(Long userId) {
+
+        if (!userRepository.existsById(userId)) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
+        }
+
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findWatchingInfoByUserId(userId);
+
+        return getVideoResponseByWatchingInfo(watchingInfos);
+    }
+
+    // channel 엔티티 생성 및 유저 구독 연관관계 설정 필요
+    public List<VideoResponse> getSubscribingChannelNewVideos(Long userId) {
+
+        if (!userRepository.existsById(userId)) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
+        }
+
+        // List<WatchingInfo> watchingInfos = watchingInfoRepository.();
+
+        return new ArrayList<VideoResponse>();
+    }
+
+    List<VideoResponse> getVideoResponseByWatchingInfo(List<WatchingInfo> watchingInfos) {
+
+        List<Video> videos = videoRepository.findAllById(watchingInfos.stream()
+                .map(WatchingInfo::getVideoId)
+                .toList());
+
+        return videos.stream()
+                .map(video -> VideoResponse.builder()
+                        .title(video.getTitle())
+                        .description(video.getDescription())
+                        .nickname(video.getUser().getNickname())
+                        .category(VideoCategory.getNameByCode(video.getCategoryId()))
+                        .videoUrl(video.getVideoFile().getPath())
+                        .views(video.getViews())
+                        .thumbnailUrl(video.getThumbnailUrl())
+                        .build())
+                .toList();
     }
 }

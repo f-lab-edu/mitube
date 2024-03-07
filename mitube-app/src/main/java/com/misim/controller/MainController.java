@@ -7,6 +7,7 @@ import com.misim.service.UserService;
 import com.misim.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -17,10 +18,8 @@ public class MainController {
 
     private final VideoService videoService;
 
-    private final UserService userService;
-
     @GetMapping("/home")
-    public CommonResponse<HomeResponse> home() {
+    public CommonResponse<HomeResponse> home(@RequestParam Long userId) {
 
         HomeResponse response = new HomeResponse();
 
@@ -36,10 +35,10 @@ public class MainController {
         response.setHotVideoList(videoService.getHotVideos());
 
         // 내가 시청 중인 동영상
-        response.setWatchingVideoList(userService.getWatchingVideos());
+        response.setWatchingVideoList(videoService.getWatchingVideos(userId));
 
         // 구독 채널의 새 동영상
-        response.setSubscribingChannelNewVideoList(userService.getSubscribingChannelNewVideos());
+        response.setSubscribingChannelNewVideoList(videoService.getSubscribingChannelNewVideos(userId));
 
         return CommonResponse
                 .<HomeResponse>builder()
