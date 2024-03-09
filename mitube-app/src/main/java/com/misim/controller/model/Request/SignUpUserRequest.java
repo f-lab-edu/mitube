@@ -40,23 +40,23 @@ public class SignUpUserRequest implements Checker {
     public void check() {
 
         // null 체크
-        if (email == null) {
+        if (email == null || email.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_EMAIL);
         }
 
-        if (password == null) {
+        if (password == null || password.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_PASSWORD);
         }
 
-        if (confirmPassword == null) {
+        if (confirmPassword == null || confirmPassword.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_CONFIRM_PASSWORD);
         }
 
-        if (nickname == null) {
+        if (nickname == null || nickname.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_NICKNAME);
         }
 
-        if (token == null) {
+        if (token == null || token.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_SMS_TOKEN);
         }
 
