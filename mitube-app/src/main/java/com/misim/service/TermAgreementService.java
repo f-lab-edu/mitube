@@ -1,12 +1,9 @@
 package com.misim.service;
 
-
-import com.misim.entity.Term;
 import com.misim.entity.TermAgreement;
 import com.misim.entity.User;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
-import com.misim.repository.TermAgreementRepository;
 import com.misim.repository.TermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

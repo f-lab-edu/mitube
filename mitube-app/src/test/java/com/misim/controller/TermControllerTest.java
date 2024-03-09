@@ -82,7 +82,7 @@ class TermControllerTest {
     public void testGetTermPolicyNotFoundTermsByNoTitle() throws Exception {
 
         // 실행 결과 확인
-        ResultActions actions = mockMvc.perform(get("/terms/policy")
+        mockMvc.perform(get("/terms/policy")
                         .param("title", "")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -102,7 +102,7 @@ class TermControllerTest {
         given(termService.getTermByTitle("Sample TermDetailResponse")).willReturn(mockResponse);
 
         // 실행 결과 확인
-        ResultActions actions = mockMvc.perform(get("/terms/policy")
+        mockMvc.perform(get("/terms/policy")
                         .param("title", "Unknown TermDetailResponse")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());

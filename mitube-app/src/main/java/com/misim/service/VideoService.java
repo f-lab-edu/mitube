@@ -80,7 +80,7 @@ public class VideoService {
     }
 
     private String createFileName(String originalFilename) {
-        return UUID.randomUUID().toString() + "_" + originalFilename;
+        return UUID.randomUUID() + "_" + originalFilename;
     }
 
     public void createVideos(CreateVideoRequest createVideoRequest) {

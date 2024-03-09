@@ -1,6 +1,5 @@
 package com.misim.entity;
 
-import com.misim.service.VideoService;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,5 @@
 package com.misim.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.misim.controller.model.Response.TermDetailResponse;
 import com.misim.entity.Term;
 import com.misim.repository.TermRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,14 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest

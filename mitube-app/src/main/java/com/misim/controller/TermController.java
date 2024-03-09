@@ -2,7 +2,6 @@ package com.misim.controller;
 
 import com.misim.controller.model.Response.TermDetailResponse;
 import com.misim.controller.model.Response.TermListResponse;
-import com.misim.controller.model.Response.TermResponse;
 import com.misim.exception.CommonResponse;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
@@ -16,10 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "약관 API", description = "약관 정보 제공 API")
 @RestController

@@ -1,7 +1,6 @@
 package com.misim.service;
 
 import com.misim.controller.model.Request.SignUpUserRequest;
-import com.misim.controller.model.Response.VideoResponse;
 import com.misim.entity.TermAgreement;
 import com.misim.entity.User;
 import com.misim.entity.VerificationToken;
@@ -14,11 +13,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +27,6 @@ public class UserService {
     private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
-    private final PlatformTransactionManager transactionManager;
 
 
     public void registerUser(SignUpUserRequest signUpUserRequest) {

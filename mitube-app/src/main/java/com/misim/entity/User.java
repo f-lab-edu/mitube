@@ -32,7 +32,7 @@ public class User extends BaseTimeEntity{
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     @Setter
-    private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
+    private List<TermAgreement> termAgreements = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     @Setter

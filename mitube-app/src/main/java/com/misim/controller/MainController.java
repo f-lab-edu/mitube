@@ -3,7 +3,6 @@ package com.misim.controller;
 import com.misim.controller.model.Response.HomeResponse;
 import com.misim.entity.VideoCategory;
 import com.misim.exception.CommonResponse;
-import com.misim.service.UserService;
 import com.misim.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
