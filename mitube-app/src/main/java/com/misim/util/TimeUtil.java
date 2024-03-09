@@ -18,6 +18,12 @@ public class TimeUtil {
         return localDateTime.format(formatter);
     }
 
+    public static String formatLocalDateTimeNow() {
+        LocalDateTime localDateTime = getNow();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
+        return localDateTime.format(formatter);
+    }
+
     public static LocalDateTime parseStringToLocalDateTime(String dateTimeString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
         return LocalDateTime.parse(dateTimeString, formatter);
