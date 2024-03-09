@@ -18,7 +18,7 @@ public class VerificationDto implements Checker{
     @Override
     public void check() {
 
-        if (code == null) {
+        if (code == null || code.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_CODE);
         }
 

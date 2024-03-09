@@ -117,6 +117,8 @@ public class UserController {
     @PostMapping("/help/resetPassword")
     public void resetPassword(@RequestBody ResetPasswordRequest request) {
 
+        request.check();
+
         userService.resetUserPassword(request.getNickname(), request.getCode());
     }
     

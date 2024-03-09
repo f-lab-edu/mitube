@@ -65,7 +65,7 @@ public class TermController {
 
     private void checkTitle(String title) {
 
-        if (title == null || title.isEmpty()) {
+        if (title == null || title.isBlank()) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_TERM);
         }
     }
