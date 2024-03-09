@@ -65,9 +65,6 @@ class TermControllerIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    // TermControllerIntegrationTest를 실행하면, 상태코드 500이 반환된다.
-    // 아래의 메소드만 실행하면, 원하는 데로 잘 동작한다.
-    // 이 부분에 대한 탐구 필요.dskfjdsklsdjslkkdjfs1234125
     @Test
     void getTermPolicySuccess() throws Exception {
         mockMvc.perform(get("/terms/policy")
