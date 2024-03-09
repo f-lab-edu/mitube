@@ -2,8 +2,11 @@ package com.misim.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.misim.controller.model.Request.CreateVideoRequest;
+import com.misim.entity.User;
 import com.misim.entity.VideoFile;
+import com.misim.repository.UserRepository;
 import com.misim.repository.VideoFileRepository;
+import com.misim.util.Base64Convertor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,6 +37,9 @@ class VideoControllerIntegrationTest {
     @Autowired
     private VideoFileRepository videoFileRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void uploadVideos() throws Exception {
 
@@ -53,17 +59,28 @@ class VideoControllerIntegrationTest {
         videoFile.ifPresent(i -> System.out.println(i.getPath()));
     }
 
-    // 아래 테스트가 진행되려면, 유저와 업로드된 파일이 필요하다.
-    // Before 어노테이션 활용해서 해결할 수 있을까?
     @Test
     void createVideos() throws Exception {
+
+        User 홍길동 = User.builder()
+                .nickname("hongkildong")
+                .build();
+
+        userRepository.save(홍길동);
+
+        VideoFile 테스트_비디오 = VideoFile.builder()
+                .path("test path")
+                .build();
+
+        videoFileRepository.save(테스트_비디오);
 
         // mock 객체
         CreateVideoRequest request = new CreateVideoRequest();
         request.setTitle("test");
         request.setDescription("test video");
         request.setNickname("hongkildong");
-        request.setToken("MQ==");
+        VideoFile videoFile = videoFileRepository.findByPath("test path");
+        request.setToken(Base64Convertor.encode(videoFile.getId()));
         request.setCategoryId(1);
 
         // 실행 결과 확인
