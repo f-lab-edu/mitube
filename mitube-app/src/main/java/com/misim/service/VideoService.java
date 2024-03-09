@@ -10,6 +10,7 @@ import com.misim.repository.VideoFileRepository;
 import com.misim.repository.VideoRepository;
 import com.misim.repository.WatchingInfoRepository;
 import com.misim.util.Base64Convertor;
+import com.misim.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,7 +157,9 @@ public class VideoService {
 
     public List<VideoResponse> getHotVideos() {
 
-        List<WatchingInfo> watchingInfos = watchingInfoRepository.findHotWatchingInfo();
+        LocalDateTime current = TimeUtil.getNow().minusMinutes(30);
+
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findHotWatchingInfo(current);
 
         return getVideoResponseByWatchingInfo(watchingInfos);
     }
