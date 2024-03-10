@@ -5,10 +5,7 @@ import com.misim.controller.model.Response.VideoResponse;
 import com.misim.entity.*;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
-import com.misim.repository.UserRepository;
-import com.misim.repository.VideoFileRepository;
-import com.misim.repository.VideoRepository;
-import com.misim.repository.WatchingInfoRepository;
+import com.misim.repository.*;
 import com.misim.util.Base64Convertor;
 import com.misim.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +36,7 @@ public class VideoService {
     private final VideoFileRepository videoFileRepository;
     private final UserRepository userRepository;
     private final WatchingInfoRepository watchingInfoRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     public String uploadVideos(MultipartFile file) {
 
@@ -157,9 +155,9 @@ public class VideoService {
 
     public List<VideoResponse> getHotVideos() {
 
-        LocalDateTime current = TimeUtil.getNow().minusMinutes(30);
+        LocalDateTime thirtyMinutesAgo = TimeUtil.getNow().minusMinutes(30);
 
-        List<WatchingInfo> watchingInfos = watchingInfoRepository.findHotWatchingInfo(current);
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findHotWatchingInfo(thirtyMinutesAgo);
 
         return getVideoResponseByWatchingInfo(watchingInfos);
     }
@@ -175,16 +173,29 @@ public class VideoService {
         return getVideoResponseByWatchingInfo(watchingInfos);
     }
 
-    // channel 엔티티 생성 및 유저 구독 연관관계 설정 필요
     public List<VideoResponse> getSubscribingChannelNewVideos(Long userId) {
 
         if (!userRepository.existsById(userId)) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
         }
 
-        // List<WatchingInfo> watchingInfos = watchingInfoRepository.();
+        List<Subscription> subscriptions = subscriptionRepository.findSubscriptionsBySubscriberId(userId);
 
-        return new ArrayList<VideoResponse>();
+        List<Video> videos = videoRepository.findTopByUserId(subscriptions.stream()
+                .map(Subscription::getOwnerId)
+                .toList());
+
+        return videos.stream()
+                .map(video -> VideoResponse.builder()
+                        .title(video.getTitle())
+                        .description(video.getDescription())
+                        .nickname(video.getUser().getNickname())
+                        .category(VideoCategory.getNameByCode(video.getCategoryId()))
+                        .videoUrl(video.getVideoFile().getPath())
+                        .views(video.getViews())
+                        .thumbnailUrl(video.getThumbnailUrl())
+                        .build())
+                .toList();
     }
 
     List<VideoResponse> getVideoResponseByWatchingInfo(List<WatchingInfo> watchingInfos) {
