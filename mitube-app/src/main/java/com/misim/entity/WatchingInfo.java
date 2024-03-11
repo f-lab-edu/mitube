@@ -5,31 +5,31 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
-@Table(name = "watching_infos")
 @NoArgsConstructor
-public class WatchingInfo {
+@RedisHash(value = "watchingInfo")
+public class WatchingInfo implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private Long userId;
 
     private Long videoId;
 
-    private LocalDateTime startTime;
+    private Long watchingTime;
 
     // 동영상을 시청한 시간에 대한 필드 필요.
 
     @Builder
-    public WatchingInfo(Long userId, Long videoId) {
+    public WatchingInfo(Long userId, Long videoId, Long watchingTime) {
         this.userId = userId;
         this.videoId = videoId;
-        this.startTime = TimeUtil.getNow();
+        this.watchingTime = watchingTime;
     }
 }
