@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -138,7 +137,7 @@ public class VideoService {
     }
 
     public List<VideoResponse> getNewVideos() {
-        List<Video> videos = videoRepository.findAll();
+        List<Video> videos = videoRepository.findTopTen();
 
         return videos.stream()
                 .map(video -> VideoResponse.builder()
@@ -168,6 +167,7 @@ public class VideoService {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
         }
 
+        // redis
         List<WatchingInfo> watchingInfos = watchingInfoRepository.findWatchingInfoByUserId(userId);
 
         return getVideoResponseByWatchingInfo(watchingInfos);
