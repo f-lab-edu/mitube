@@ -20,19 +20,19 @@ public class CreateVideoRequest implements Checker {
     public void check() {
 
         // null 체크
-        if (title == null) {
+        if (title == null || title.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_TITLE);
         }
 
-        if (description == null) {
+        if (description == null || description.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_DESCRIPTION);
         }
 
-        if (nickname == null) {
+        if (nickname == null || nickname.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_NICKNAME);
         }
 
-        if (token == null) {
+        if (token == null || token.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_VIDEO_TOKEN);
         }
 
