@@ -24,8 +24,6 @@ public class WatchingInfo implements Serializable {
 
     private Long watchingTime;
 
-    // 동영상을 시청한 시간에 대한 필드 필요.
-
     @Builder
     public WatchingInfo(Long userId, Long videoId, Long watchingTime) {
         this.userId = userId;
