@@ -22,7 +22,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class VideoService {
     private final VideoFileRepository videoFileRepository;
     private final UserRepository userRepository;
     private final WatchingInfoRepository watchingInfoRepository;
+    private final HotVideoInfoRepository hotVideoInfoRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     public String uploadVideos(MultipartFile file) {
@@ -139,26 +142,24 @@ public class VideoService {
     public List<VideoResponse> getNewVideos() {
         List<Video> videos = videoRepository.findTopTen();
 
-        return videos.stream()
-                .map(video -> VideoResponse.builder()
-                        .title(video.getTitle())
-                        .description(video.getDescription())
-                        .nickname(video.getUser().getNickname())
-                        .category(VideoCategory.getNameByCode(video.getCategoryId()))
-                        .videoUrl(video.getVideoFile().getPath())
-                        .views(video.getViews())
-                        .thumbnailUrl(video.getThumbnailUrl())
-                        .build())
-                .toList();
+        return VideoResponse.convertVideos(videos);
     }
 
     public List<VideoResponse> getHotVideos() {
 
-        LocalDateTime thirtyMinutesAgo = TimeUtil.getNow().minusMinutes(30);
+        List<HotVideoInfo> hotVideoInfos = hotVideoInfoRepository.findAll();
 
-        List<WatchingInfo> watchingInfos = watchingInfoRepository.findHotWatchingInfo(thirtyMinutesAgo);
+        List<Long> top10VideoIds = hotVideoInfos.stream()
+                .collect(Collectors.groupingBy(HotVideoInfo::getVideoId, Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(Map.Entry::getKey)
+                .toList();
 
-        return getVideoResponseByWatchingInfo(watchingInfos);
+        List<Video> videos = videoRepository.findAllById(top10VideoIds);
+
+        return VideoResponse.convertVideos(videos);
     }
 
     public List<VideoResponse> getWatchingVideos(Long userId) {
@@ -167,10 +168,13 @@ public class VideoService {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_USER);
         }
 
-        // redis
-        List<WatchingInfo> watchingInfos = watchingInfoRepository.findWatchingInfoByUserId(userId);
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findAllByUserId(userId);
 
-        return getVideoResponseByWatchingInfo(watchingInfos);
+        List<Video> videos = videoRepository.findAllById(watchingInfos.stream()
+                .map(WatchingInfo::getVideoId)
+                .toList());
+
+        return VideoResponse.convertVideos(videos);
     }
 
     public List<VideoResponse> getSubscribingChannelNewVideos(Long userId) {
@@ -185,35 +189,6 @@ public class VideoService {
                 .map(Subscription::getOwnerId)
                 .toList());
 
-        return videos.stream()
-                .map(video -> VideoResponse.builder()
-                        .title(video.getTitle())
-                        .description(video.getDescription())
-                        .nickname(video.getUser().getNickname())
-                        .category(VideoCategory.getNameByCode(video.getCategoryId()))
-                        .videoUrl(video.getVideoFile().getPath())
-                        .views(video.getViews())
-                        .thumbnailUrl(video.getThumbnailUrl())
-                        .build())
-                .toList();
-    }
-
-    List<VideoResponse> getVideoResponseByWatchingInfo(List<WatchingInfo> watchingInfos) {
-
-        List<Video> videos = videoRepository.findAllById(watchingInfos.stream()
-                .map(WatchingInfo::getVideoId)
-                .toList());
-
-        return videos.stream()
-                .map(video -> VideoResponse.builder()
-                        .title(video.getTitle())
-                        .description(video.getDescription())
-                        .nickname(video.getUser().getNickname())
-                        .category(VideoCategory.getNameByCode(video.getCategoryId()))
-                        .videoUrl(video.getVideoFile().getPath())
-                        .views(video.getViews())
-                        .thumbnailUrl(video.getThumbnailUrl())
-                        .build())
-                .toList();
+        return VideoResponse.convertVideos(videos);
     }
 }
