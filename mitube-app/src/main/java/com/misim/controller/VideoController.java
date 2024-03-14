@@ -1,5 +1,6 @@
 package com.misim.controller;
 
+import com.misim.controller.model.Response.StartWatchingVideoResponse;
 import com.misim.controller.model.Response.UploadVideosResponse;
 import com.misim.controller.model.Request.CreateVideoRequest;
 import com.misim.exception.CommonResponse;
@@ -70,23 +71,29 @@ public class VideoController {
         // 비디오 생성
         videoService.createVideos(createVideoRequest);
     }
-    
-    // get video - 비디오 호출 정보(유저, 호출 시간) 로그 저장
+
     @GetMapping("/watch/{videoId}")
-    public void startWatchingVideo(@PathVariable Long videoId, @RequestParam Long userId) {
+    public CommonResponse<StartWatchingVideoResponse> startWatchingVideo(@PathVariable Long videoId, @RequestParam Long userId) {
 
-        // 비디오 호출 정보 저장
-        videoService.watchVideos(videoId, userId);
+        Long watchingTime = videoService.startWatchingVideo(videoId, userId);
+
+        StartWatchingVideoResponse response = StartWatchingVideoResponse.builder().watchingTime(watchingTime).build();
+
+        return CommonResponse
+                .<StartWatchingVideoResponse>builder()
+                .body(response)
+                .build();
     }
 
     @PostMapping("/watch/{videoId}")
-    public void watchingVideo(@PathVariable Long videoId, @RequestParam Long userId) {
+    public void watchingVideo(@PathVariable Long videoId, @RequestParam Long userId, @RequestParam Long watchingTime) {
 
+        videoService.watchVideo(videoId, userId, watchingTime);
     }
 
-    // 요청 타입과 url 작성
-    @PostMapping("/watch/{videoId}")
-    public void completeWatchingVideo(@PathVariable Long videoId, @RequestParam Long userId) {
-        
+    @PostMapping("/watch/{videoId}/complete")
+    public void completeWatchingVideo(@PathVariable Long videoId, @RequestParam Long userId, @RequestParam Long watchingTime) {
+
+        videoService.watchVideo(videoId, userId, watchingTime);
     }
 }

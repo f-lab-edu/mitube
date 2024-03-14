@@ -7,7 +7,6 @@ import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.repository.*;
 import com.misim.util.Base64Convertor;
-import com.misim.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -125,18 +123,28 @@ public class VideoService {
         videoRepository.save(video);
     }
 
-    public void watchVideos(Long videoId, Long userId) {
+    public Long startWatchingVideo (Long videoId, Long userId) {
 
         if (!videoRepository.existsById(videoId)) {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_VIDEO);
         }
 
-        WatchingInfo watchingInfo = WatchingInfo.builder()
-                .videoId(videoId)
-                .userId(userId)
-                .build();
+        if (watchingInfoRepository.existsByUserIdAndVideoId(userId, videoId)) {
 
-        watchingInfoRepository.save(watchingInfo);
+            return watchingInfoRepository.findByUserIdAndVideoId(userId, videoId).getWatchingTime();
+
+        } else {
+
+            WatchingInfo watchingInfo = WatchingInfo.builder()
+                    .videoId(videoId)
+                    .userId(userId)
+                    .watchingTime(0L)
+                    .build();
+
+            watchingInfoRepository.save(watchingInfo);
+
+            return 0L;
+        }
     }
 
     public List<VideoResponse> getNewVideos() {
@@ -190,5 +198,16 @@ public class VideoService {
                 .toList());
 
         return VideoResponse.convertVideos(videos);
+    }
+
+    public void watchVideo(Long videoId, Long userId, Long watchingTime) {
+
+        WatchingInfo watchingInfo = WatchingInfo.builder()
+                .videoId(videoId)
+                .userId(userId)
+                .watchingTime(watchingTime)
+                .build();
+
+        watchingInfoRepository.save(watchingInfo);
     }
 }
