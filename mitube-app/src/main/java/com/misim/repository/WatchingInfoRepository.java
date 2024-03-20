@@ -2,14 +2,16 @@ package com.misim.repository;
 
 import com.misim.entity.WatchingInfo;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface WatchingInfoRepository extends CrudRepository<WatchingInfo, Long> {
+@Repository
+public interface WatchingInfoRepository extends CrudRepository<WatchingInfo, String> {
 
     List<WatchingInfo> findAllByUserId(Long userId);
 
-    Boolean existsByUserIdAndVideoId(Long userId, Long videoId);
+    Boolean existsByKey(String key);
 
-    WatchingInfo findByUserIdAndVideoId(Long userId, Long videoId);
+    WatchingInfo findByKey(String key);
 }

@@ -75,9 +75,7 @@ public class VideoController {
     @GetMapping("/watch/{videoId}")
     public CommonResponse<StartWatchingVideoResponse> startWatchingVideo(@PathVariable Long videoId, @RequestParam Long userId) {
 
-        Long watchingTime = videoService.startWatchingVideo(videoId, userId);
-
-        StartWatchingVideoResponse response = StartWatchingVideoResponse.builder().watchingTime(watchingTime).build();
+        StartWatchingVideoResponse response = videoService.startWatchingVideo(videoId, userId);
 
         return CommonResponse
                 .<StartWatchingVideoResponse>builder()
@@ -85,15 +83,17 @@ public class VideoController {
                 .build();
     }
 
+
     @PostMapping("/watch/{videoId}")
     public void watchingVideo(@PathVariable Long videoId, @RequestParam Long userId, @RequestParam Long watchingTime) {
 
-        videoService.watchVideo(videoId, userId, watchingTime);
+        videoService.updateWatchingVideoInfo(videoId, userId, watchingTime);
     }
 
+    // 99999 에러 발생
     @PostMapping("/watch/{videoId}/complete")
     public void completeWatchingVideo(@PathVariable Long videoId, @RequestParam Long userId, @RequestParam Long watchingTime) {
 
-        videoService.watchVideo(videoId, userId, watchingTime);
+        videoService.updateWatchingVideoInfo(videoId, userId, watchingTime);
     }
 }

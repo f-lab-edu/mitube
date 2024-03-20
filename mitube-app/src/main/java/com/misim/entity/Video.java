@@ -37,11 +37,12 @@ public class Video extends BaseTimeEntity{
     private String thumbnailUrl;
 
     @Builder
-    public Video(String title, String description, Integer categoryId, Long views, String thumbnailUrl) {
+    public Video(String title, String description, Integer categoryId, Long views, String thumbnailUrl, User user) {
         this.title = title;
         this.description = description;
         this.categoryId = categoryId;
         this.views = views;
+        this.user = user;
         this.thumbnailUrl = thumbnailUrl;
     }
 }
