@@ -25,6 +25,6 @@ public class RedisConfig {
     public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
-        return  redisTemplate;
+        return redisTemplate;
     }
 }

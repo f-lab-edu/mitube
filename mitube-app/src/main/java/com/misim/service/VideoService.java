@@ -8,7 +8,6 @@ import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.repository.*;
 import com.misim.util.Base64Convertor;
-import com.misim.util.SecondaryIndexConvertor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,6 @@ public class VideoService {
     private final VideoFileRepository videoFileRepository;
     private final UserRepository userRepository;
     private final WatchingInfoRepository watchingInfoRepository;
-    private final HotVideoInfoRepository hotVideoInfoRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     public String uploadVideos(MultipartFile file) {
@@ -131,11 +130,18 @@ public class VideoService {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_VIDEO);
         }
 
-        String key = SecondaryIndexConvertor.encode(userId, videoId);
+        if (watchingInfoRepository.existsByUserId(userId)) {
 
-        if (watchingInfoRepository.existsByKey(key)) {
+            List<WatchingInfo> watchingInfos = watchingInfoRepository.findAllByUserId(userId);
 
-            WatchingInfo watchingInfo = watchingInfoRepository.findByKey(key);
+            WatchingInfo watchingInfo = watchingInfos.stream()
+                    .filter(w -> Objects.equals(w.getVideoId(), videoId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (watchingInfo == null) {
+                throw new MitubeException(MitubeErrorCode.NOT_FOUND_WATCHING_INFO);
+            }
 
             return StartWatchingVideoResponse.builder()
                     .watchingTime(watchingInfo.getWatchingTime())
@@ -157,6 +163,28 @@ public class VideoService {
         }
     }
 
+    public void updateWatchingVideoInfo(Long videoId, Long userId, Long watchingTime) {
+
+        if (!watchingInfoRepository.existsByUserId(userId)) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_WATCHING_INFO);
+        }
+
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findAllByUserId(userId);
+
+        WatchingInfo watchingInfo = watchingInfos.stream()
+                .filter(w -> Objects.equals(w.getVideoId(), videoId))
+                .findFirst()
+                .orElse(null);
+
+        if (watchingInfo == null) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_WATCHING_INFO);
+        }
+
+        watchingInfo.setWatchingTime(watchingTime);
+
+        watchingInfoRepository.save(watchingInfo);
+    }
+
     public List<VideoResponse> getNewVideos() {
 
         List<Video> videos = videoRepository.findTopTen();
@@ -167,20 +195,22 @@ public class VideoService {
     public List<VideoResponse> getHotVideos() {
 
         // redis template, sorted hash
+        // 가장 최근 시청 정보 중 100개를 가져와서 인기도 측정
 
-        List<HotVideoInfo> hotVideoInfos = hotVideoInfoRepository.findAll();
+        List<WatchingInfo> watchingInfos = watchingInfoRepository.findAll();
 
-        List<Long> top10VideoIds = hotVideoInfos.stream()
-                .collect(Collectors.groupingBy(HotVideoInfo::getVideoId, Collectors.counting()))
-                .entrySet().stream()
-                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
-                .limit(10)
-                .map(Map.Entry::getKey)
-                .toList();
+//        List<Long> top10VideoIds = hotVideoInfos.stream()
+//                .collect(Collectors.groupingBy(HotVideoInfo::getVideoId, Collectors.counting()))
+//                .entrySet().stream()
+//                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+//                .limit(10)
+//                .map(Map.Entry::getKey)
+//                .toList();
 
-        List<Video> videos = videoRepository.findAllById(top10VideoIds);
+        //List<Video> videos = videoRepository.findAllById(top10VideoIds);
 
-        return VideoResponse.convertVideos(videos);
+        //return VideoResponse.convertVideos(videos);
+        return null;
     }
 
     public List<VideoResponse> getWatchingVideos(Long userId) {
@@ -193,6 +223,7 @@ public class VideoService {
 
         List<Video> videos = videoRepository.findAllById(watchingInfos.stream()
                 .map(WatchingInfo::getVideoId)
+                .limit(10)
                 .toList());
 
         return VideoResponse.convertVideos(videos);
@@ -211,20 +242,5 @@ public class VideoService {
                 .toList());
 
         return VideoResponse.convertVideos(videos);
-    }
-
-    public void updateWatchingVideoInfo(Long videoId, Long userId, Long watchingTime) {
-
-        String key = SecondaryIndexConvertor.encode(userId, videoId);
-
-        if (!watchingInfoRepository.existsByKey(key)) {
-            throw new MitubeException(MitubeErrorCode.NOT_FOUND_WATCHING_INFO);
-        }
-
-        WatchingInfo watchingInfo = watchingInfoRepository.findByKey(key);
-
-        watchingInfo.setWatchingTime(watchingTime);
-
-        watchingInfoRepository.save(watchingInfo);
     }
 }

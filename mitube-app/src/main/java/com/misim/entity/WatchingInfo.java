@@ -1,6 +1,5 @@
 package com.misim.entity;
 
-import com.misim.util.SecondaryIndexConvertor;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,8 +19,6 @@ public class WatchingInfo implements Serializable {
     private String id;
 
     @Indexed
-    private String key;
-
     private Long userId;
 
     private Long videoId;
@@ -31,7 +28,6 @@ public class WatchingInfo implements Serializable {
 
     @Builder
     public WatchingInfo(Long userId, Long videoId, Long watchingTime) {
-        this.key = SecondaryIndexConvertor.encode(userId, videoId);
         this.userId = userId;
         this.videoId = videoId;
         this.watchingTime = watchingTime;
