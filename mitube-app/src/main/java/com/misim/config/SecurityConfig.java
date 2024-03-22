@@ -20,7 +20,8 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/users/**",
                         "/terms/**",
-                        "/videos/**"
+                        "/videos/**",
+                        "/home"
                 );
     }
 

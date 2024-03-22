@@ -228,12 +228,10 @@ public class VideoService {
 
         List<Subscription> subscriptions = subscriptionRepository.findSubscriptionsBySubscriberId(userId);
 
-        List<Video> videos = videoRepository.findLastByUserId(
-                subscriptions.stream()
-                .map(Subscription::getOwnerId)
+        List<Video> videos = subscriptions.stream()
                 .limit(10)
-                .toList()
-        );
+                .map(s -> videoRepository.findTopByUserId(s.getOwnerId()))
+                .toList();
 
         return VideoResponse.convertVideos(videos);
     }

@@ -18,7 +18,6 @@ public class MainController {
 
     private final HomeService homeService;
 
-    // % 실행 확인 %
     @GetMapping("/home")
     public CommonResponse<HomeResponse> home(@RequestParam Long userId) {
 

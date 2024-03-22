@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface VideoRepository extends JpaRepository<Video, Long> {
 
-    @Query("SELECT v FROM Video v WHERE v.user.id IN :userIds GROUP BY v.user ORDER BY MAX(v.createdDate) DESC")
-    List<Video> findLastByUserId(List<Long> userIds);
+    Video findTopByUserId(Long userId);
 
-    @Query(value = "SELECT v FROM Video v OREDER BY v.modifiedDate LIMIT 10", nativeQuery = true)
+
+    @Query("SELECT v FROM Video v ORDER BY v.modifiedDate LIMIT 10")
     List<Video> findTopTen();
 
     Video findByTitle(String title);
