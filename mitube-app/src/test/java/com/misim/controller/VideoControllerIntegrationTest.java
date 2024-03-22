@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.misim.controller.model.Request.CreateVideoRequest;
 import com.misim.entity.User;
+import com.misim.entity.Video;
 import com.misim.entity.VideoFile;
+import com.misim.entity.WatchingInfo;
 import com.misim.repository.UserRepository;
 import com.misim.repository.VideoFileRepository;
+import com.misim.repository.VideoRepository;
+import com.misim.repository.WatchingInfoRepository;
 import com.misim.util.Base64Convertor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -42,6 +45,12 @@ class VideoControllerIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private VideoRepository videoRepository;
+
+    @Autowired
+    private WatchingInfoRepository watchingInfoRepository;
 
     @Test
     void uploadVideosSuccess() throws Exception {
@@ -280,5 +289,40 @@ class VideoControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request))
                         .with(csrf()))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void startWatchingVideo() throws Exception {
+        User 홍길동 = User.builder()
+                .nickname("hongkildong")
+                .build();
+
+        userRepository.save(홍길동);
+
+        Video 비디오 = Video.builder()
+                .title("video")
+                .build();
+
+        videoRepository.save(비디오);
+
+        Long videoId = videoRepository.findByTitle("video").getId();
+        Long userId = userRepository.findByNickname("hongkildong").getId();
+
+        mockMvc.perform(get("/videos/watch/")
+                .param("videoId", String.valueOf(videoId))
+                .param("userId", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        System.out.println(watchingInfoRepository.count());
+    }
+
+    @Test
+    void watchingVideo() {
+
+    }
+
+    @Test
+    void completeWatchingVideo() {
+
     }
 }
