@@ -1,6 +1,8 @@
 package com.misim.controller;
 
-import com.misim.controller.model.TermResponseDto;
+import com.misim.controller.model.Response.TermDetailResponse;
+import com.misim.controller.model.Response.TermListResponse;
+import com.misim.controller.model.Response.TermResponse;
 import com.misim.exception.CommonResponse;
 import com.misim.service.TermService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,11 +32,14 @@ public class TermController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전체 약관 정보 전달 성공.")})
     @GetMapping("/agree")
-    public ResponseEntity<List<TermResponseDto>> getTerms() {
+    public CommonResponse<TermListResponse> getTerms() {
 
-        List<TermResponseDto> terms = termService.getAllTerms();
+        TermListResponse terms = termService.getAllTerms();
 
-        return ResponseEntity.ok().body(terms);
+        return CommonResponse
+                .<TermListResponse>builder()
+                .body(terms)
+                .build();
     }
     
     // 자세히 버튼 클릭 시 해당 약관에 대한 자세한 내용 제시
@@ -44,10 +49,13 @@ public class TermController {
             @ApiResponse(responseCode = "400", description = "제목 형식이 올바르지 않습니다.", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     @GetMapping("/policy")
-    public ResponseEntity<TermResponseDto> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
+    public CommonResponse<TermDetailResponse> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
 
-        TermResponseDto termResponseDto = termService.getTermByTitle(title);
+        TermDetailResponse response = termService.getTermByTitle(title);
 
-        return ResponseEntity.ok().body(termResponseDto);
+        return CommonResponse
+                .<TermDetailResponse>builder()
+                .body(response)
+                .build();
     }
 }

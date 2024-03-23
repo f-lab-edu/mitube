@@ -25,7 +25,8 @@ public class SecurityConfig {
             web.ignoring()
                     .requestMatchers(
                             "/users/**",
-                            "/terms/**"
+                            "/terms/**",
+                            "/videos/**"
                     );
         };
     }

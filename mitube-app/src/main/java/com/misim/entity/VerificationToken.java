@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Table(name = "verification_tokens")
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 public class VerificationToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -24,7 +22,6 @@ public class VerificationToken {
     @OneToOne
     @JoinColumn(name = "SMS_VERIFICATION_ID")
     private SmsVerification smsVerification;
-
 
     @Builder
     public VerificationToken(User user, SmsVerification smsVerification) {

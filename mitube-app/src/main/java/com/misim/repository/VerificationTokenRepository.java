@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
 
     VerificationToken findVerificationTokenBySmsVerificationId(Long smsVerificationId);
+
+    Boolean existsVerificationTokenBySmsVerificationId(Long smsVerificationId);
 }

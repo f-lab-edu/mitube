@@ -1,5 +1,6 @@
 package com.misim.service;
 
+import com.misim.controller.model.Response.VerifySMSResponse;
 import com.misim.controller.model.VerificationDto;
 import com.misim.entity.SmsVerification;
 import com.misim.exception.MitubeErrorCode;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Random;
 
 @Service
@@ -91,7 +93,7 @@ public class SmsService {
         return sb.toString();
     }
 
-    public String matchSMS(String phoneNumber, String token, LocalDateTime current) {
+    public VerifySMSResponse matchSMS(String phoneNumber, String token, LocalDateTime current) {
 
         SmsVerification smsVerification = smsVerificationRepository.findSmsVerificationByPhoneNumber(phoneNumber);
 
@@ -99,7 +101,7 @@ public class SmsService {
             throw new MitubeException(MitubeErrorCode.NOT_FOUND_CODE);
         }
 
-        if (smsVerification.getVerificationCode().equals(token)) {
+        if (!smsVerification.getVerificationCode().equals(token)) {
             throw new MitubeException(MitubeErrorCode.NOT_MATCH_CODE);
         }
 
@@ -116,7 +118,10 @@ public class SmsService {
         smsVerification.setVerified(true);
         smsVerificationRepository.save(smsVerification);
 
-        return Base64Convertor.encode(smsVerification.getId());
+        VerifySMSResponse response = new VerifySMSResponse();
+        response.setToken(Base64Convertor.encode(smsVerification.getId()));
+
+        return response;
     }
 
     public boolean checkVerification(String token) {

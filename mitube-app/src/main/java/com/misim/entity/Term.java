@@ -1,6 +1,7 @@
 package com.misim.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,21 +25,16 @@ public class Term {
 
     private Boolean isRequired;
 
-    @OneToMany(mappedBy = "term")
-    private List<TermAgreement> termAgreements = new ArrayList<TermAgreement>();
+    private Integer version;
+
+    private Integer termGroup;
 
     @Builder
-    public Term(String title, String content, Boolean isRequired) {
+    public Term(String title, String content, Boolean isRequired, Integer version, Integer termGroup) {
         this.title = title;
         this.content = content;
         this.isRequired = isRequired;
-    }
-
-    public void addTermAgreements(TermAgreement termAgreement) {
-        this.termAgreements.add(termAgreement);
-
-        if (termAgreement.getTerm() != this) {
-            termAgreement.setTerm(this);
-        }
+        this.version = version;
+        this.termGroup = termGroup;
     }
 }

@@ -1,15 +1,18 @@
-package com.misim.controller.model;
+package com.misim.controller.model.Request;
 
+import com.misim.controller.model.Checker;
 import com.misim.exception.MitubeErrorCode;
 import com.misim.exception.MitubeException;
 import com.misim.util.Validator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Schema(description = "유저 DTO")
-public class UserDto implements Checker{
+public class SignUpUserRequest implements Checker {
 
     @Schema(name = "email", description = "User 이메일", example = "hongkildong@example.com", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
@@ -26,20 +29,12 @@ public class UserDto implements Checker{
     @Schema(name = "phoneNumber", description = "User 전화번호", example = "01012345678", requiredMode = Schema.RequiredMode.REQUIRED)
     private String phoneNumber;
 
-    @Schema(name = "token", description = "User 토큰", example = "AIHR==", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(name = "code", description = "User 토큰", example = "AIHR==", requiredMode = Schema.RequiredMode.REQUIRED)
     private String token;
 
-    @Schema(name = "agreeRequiredTerm1", description = "User 필수 약관1", example = "true", requiredMode = Schema.RequiredMode.REQUIRED)
-    private boolean agreeRequiredTerm1;
-
-    @Schema(name = "agreeRequiredTerm2", description = "User 필수 약관2", example = "true", requiredMode = Schema.RequiredMode.REQUIRED)
-    private boolean agreeRequiredTerm2;
-
-    @Schema(name = "agreeOptionalTerm1", description = "User 선택 약관1", example = "true", requiredMode = Schema.RequiredMode.REQUIRED)
-    private boolean agreeOptionalTerm1;
-
-    @Schema(name = "agreeOptionalTerm2", description = "User 선택 약관2", example = "true", requiredMode = Schema.RequiredMode.REQUIRED)
-    private boolean agreeOptionalTerm2;
+    // 리스트
+    @Schema(name = "checkedTerms", description = "체크된 약관 제목", requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<String> checkedTermTitles;
 
     @Override
     public void check() {
@@ -62,7 +57,7 @@ public class UserDto implements Checker{
         }
 
         if (token == null) {
-            throw new MitubeException(MitubeErrorCode.INVALID_TOKEN);
+            throw new MitubeException(MitubeErrorCode.INVALID_SMS_TOKEN);
         }
 
         // 사이즈 체크
@@ -87,6 +82,5 @@ public class UserDto implements Checker{
         Validator.validatePassword(password);
         Validator.validatePassword(confirmPassword);
         Validator.matchPassword(password, confirmPassword);
-        Validator.validateRequiredTerms(agreeRequiredTerm1, agreeRequiredTerm2);
     }
 }
