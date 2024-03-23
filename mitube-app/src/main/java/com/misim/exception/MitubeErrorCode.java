@@ -40,13 +40,16 @@ public enum MitubeErrorCode implements ErrorCode{
 
     EMPTY_FILE(HttpStatus.BAD_REQUEST, "빈 파일입니다.", 10600),
     NOT_VIDEO_FILE(HttpStatus.BAD_REQUEST, "비디오 파일이 아닙니다.", 10601),
-    NOT_CREATED_DIR(HttpStatus.BAD_REQUEST, "디렉토리 생성에 실패했습니다.", 10602),
-    NOT_CREATED_FILE(HttpStatus.BAD_REQUEST, "파일 생성에 실패했습니다.", 10603),
+    NOT_CREATED_DIR(HttpStatus.INTERNAL_SERVER_ERROR, "디렉토리 생성에 실패했습니다.", 10602),
+    NOT_CREATED_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "파일 생성에 실패했습니다.", 10603),
     INVALID_TITLE(HttpStatus.BAD_REQUEST, "비디오 타이틀 형식에 맞지 않습니다.", 10604),
     INVALID_DESCRIPTION(HttpStatus.BAD_REQUEST, "비디오 설명 형식에 맞지 않습니다.", 10605),
     INVALID_VIDEO_TOKEN(HttpStatus.BAD_REQUEST, "비디오 토큰 형식에 맞지 않습니다.", 10606),
     NOT_FOUND_VIDEO_FILE(HttpStatus.BAD_REQUEST, "비디오 파일을 찾을 수 없습니다.", 10607),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "유저를 찾을 수 없습니다.", 10608),
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "비디오 카테고리 형식에 맞지 않습니다.", 10609),
+    NOT_FOUND_VIDEO(HttpStatus.BAD_REQUEST, "비디오를 찾을 수 없습니다.", 10610),
+    NOT_FOUND_WATCHING_INFO(HttpStatus.BAD_REQUEST, "시청 정보를 찾을 수 없습니다.", 10611),
 
     INVALID_LOCAL_DATETIME(HttpStatus.BAD_REQUEST, "잘못된 LocalDateTime 형식입니다.", 10700),
 

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -16,6 +17,6 @@ public interface TermRepository extends JpaRepository<Term, Long> {
     List<Term> findTermGroupByTermGroupAndMaxVersion();
 
     @Query("SELECT t1 FROM Term t1 WHERE t1.title = :title AND t1.version = (SELECT MAX(t2.version) FROM Term t2 WHERE t2.title = :title)")
-    Term findTermByTitleAndMaxVersion(@Param("title") String title);
+    Optional<Term> findTermByTitleAndMaxVersion(@Param("title") String title);
 
 }

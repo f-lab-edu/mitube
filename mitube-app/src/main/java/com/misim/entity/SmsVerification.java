@@ -33,8 +33,9 @@ public class SmsVerification {
     private Boolean isVerified;
 
     @Builder
-    public SmsVerification(String phoneNumber) {
+    public SmsVerification(String phoneNumber, String verificationCode) {
         this.phoneNumber = phoneNumber;
+        this.verificationCode = verificationCode;
         this.isVerified = false;
     }
 

@@ -20,8 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @Tag(name = "유저 API", description = "유저 정보 관련 API")
 @RestController
 @RequiredArgsConstructor
@@ -116,6 +114,8 @@ public class UserController {
     })
     @PostMapping("/help/resetPassword")
     public void resetPassword(@RequestBody ResetPasswordRequest request) {
+
+        request.check();
 
         userService.resetUserPassword(request.getNickname(), request.getCode());
     }

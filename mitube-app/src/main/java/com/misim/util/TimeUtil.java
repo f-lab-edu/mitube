@@ -2,10 +2,7 @@ package com.misim.util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
-import java.util.function.Function;
 
 public class TimeUtil {
 
@@ -14,6 +11,12 @@ public class TimeUtil {
     }
 
     public static String formatLocalDateTime(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
+        return localDateTime.format(formatter);
+    }
+
+    public static String formatLocalDateTimeNow() {
+        LocalDateTime localDateTime = getNow();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
         return localDateTime.format(formatter);
     }

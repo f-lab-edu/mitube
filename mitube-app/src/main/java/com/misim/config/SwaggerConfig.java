@@ -25,30 +25,43 @@ public class SwaggerConfig {
                 .description("Youtube 클론 프로젝트")
                 .version("1.0.0");
     }
-//
-//    @Bean
-//    public GroupedOpenApi userGroup() {
-//        List<Tag> tags = List.of(
-//                new Tag().name("User API").description("User API")
-//        );
-//
-//        return GroupedOpenApi.builder()
-//                .group("User")
-//                .pathsToMatch("/users/**")
-//                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
-//                .build();
-//    }
-//
-//    @Bean
-//    public GroupedOpenApi termGroup() {
-//        List<Tag> tags = List.of(
-//                new Tag().name("Term API").description("Term API")
-//        );
-//
-//        return GroupedOpenApi.builder()
-//                .group("Term")
-//                .pathsToMatch("/terms/**")
-//                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
-//                .build();
-//    }
+
+    @Bean
+    public GroupedOpenApi userGroup() {
+        List<Tag> tags = List.of(
+                new Tag().name("유저 API").description("유저 정보 관련 API")
+        );
+
+        return GroupedOpenApi.builder()
+                .group("유저 API")
+                .pathsToMatch("/users/**")
+                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi termGroup() {
+        List<Tag> tags = List.of(
+                new Tag().name("약관 API").description("약관 정보 제공 API")
+        );
+
+        return GroupedOpenApi.builder()
+                .group("약관 API")
+                .pathsToMatch("/terms/**")
+                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi videoGroup() {
+        List<Tag> tags = List.of(
+                new Tag().name("동영상 API").description("동영상 정보 관련 API")
+        );
+
+        return GroupedOpenApi.builder()
+                .group("동영상 API")
+                .pathsToMatch("/videos/**")
+                .addOpenApiCustomizer(openApi -> openApi.setTags(tags))
+                .build();
+    }
 }

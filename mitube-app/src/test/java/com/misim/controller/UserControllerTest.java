@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -48,7 +47,7 @@ class UserControllerTest {
 
 
     @Test
-    void signupUser() throws Exception {
+    void signupUserByMocking() throws Exception {
 
         // mock 객체
         SignUpUserRequest mockRequest = new SignUpUserRequest();
@@ -70,7 +69,7 @@ class UserControllerTest {
     }
 
     @Test
-    void sendSMSVerificationCode() throws Exception {
+    void sendSMSVerificationCodeByMocking() throws Exception {
 
         // mock 객체
         SendSMSRequest mockRequest = new SendSMSRequest();
@@ -87,7 +86,7 @@ class UserControllerTest {
     }
 
     @Test
-    void checkSMSVerificationCode() throws Exception {
+    void checkSMSVerificationCodeByMocking() throws Exception {
 
         // mock 객체
         VerifySMSRequest mockRequest = new VerifySMSRequest();
@@ -113,7 +112,7 @@ class UserControllerTest {
     }
 
     @Test
-    void findNickname() throws Exception {
+    void findNicknameByMocking() throws Exception {
 
         // mock 객체
         FindNicknameRequest mockRequest = new FindNicknameRequest();
@@ -136,7 +135,7 @@ class UserControllerTest {
     }
 
     @Test
-    void resetPassword() throws Exception {
+    void resetPasswordByMocking() throws Exception {
 
         // mock 객체
         ResetPasswordRequest mockRequest = new ResetPasswordRequest();

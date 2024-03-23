@@ -1,7 +1,7 @@
 package com.misim.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.misim.controller.model.VideoDto;
+import com.misim.controller.model.Request.CreateVideoRequest;
 import com.misim.service.VideoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -36,7 +35,7 @@ class VideoControllerTest {
     private VideoService videoService;
 
     @Test
-    void uploadVideos() throws Exception {
+    void uploadVideosByMocking() throws Exception {
 
         // mock 객체
         MockMultipartFile file = new MockMultipartFile("file", "test file".getBytes());
@@ -57,21 +56,22 @@ class VideoControllerTest {
     }
 
     @Test
-    void createVideos() throws Exception {
+    void createVideosByMocking() throws Exception {
 
         // mock 객체
-        VideoDto mockVideoDto = new VideoDto();
-        mockVideoDto.setTitle("file");
-        mockVideoDto.setDescription("test file");
-        mockVideoDto.setNickname("hongkildong");
-        mockVideoDto.setToken("MQ==");
+        CreateVideoRequest mockCreateVideoRequest = new CreateVideoRequest();
+        mockCreateVideoRequest.setTitle("test");
+        mockCreateVideoRequest.setDescription("test video");
+        mockCreateVideoRequest.setNickname("hongkildong");
+        mockCreateVideoRequest.setToken("MQ==");
+        mockCreateVideoRequest.setCategoryId(1);
 
-        doNothing().when(videoService).createVideos(mockVideoDto);
+        doNothing().when(videoService).createVideos(mockCreateVideoRequest);
 
         // 실행 결과 확인
         mockMvc.perform(post("/videos/create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(mockVideoDto))
+                        .content(objectMapper.writeValueAsString(mockCreateVideoRequest))
                         .with(csrf()))
                 .andExpect(status().isOk());
     }

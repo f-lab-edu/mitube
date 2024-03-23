@@ -2,8 +2,9 @@ package com.misim.controller;
 
 import com.misim.controller.model.Response.TermDetailResponse;
 import com.misim.controller.model.Response.TermListResponse;
-import com.misim.controller.model.Response.TermResponse;
 import com.misim.exception.CommonResponse;
+import com.misim.exception.MitubeErrorCode;
+import com.misim.exception.MitubeException;
 import com.misim.service.TermService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,10 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "약관 API", description = "약관 정보 제공 API")
 @RestController
@@ -51,11 +49,20 @@ public class TermController {
     @GetMapping("/policy")
     public CommonResponse<TermDetailResponse> getTermPolicy(@RequestParam @Parameter(description = "약관 제목", in = ParameterIn.QUERY, example = "개인 정보 보호") String title) {
 
+        checkTitle(title);
+
         TermDetailResponse response = termService.getTermByTitle(title);
 
         return CommonResponse
                 .<TermDetailResponse>builder()
                 .body(response)
                 .build();
+    }
+
+    private void checkTitle(String title) {
+
+        if (title == null || title.isBlank()) {
+            throw new MitubeException(MitubeErrorCode.NOT_FOUND_TERM);
+        }
     }
 }

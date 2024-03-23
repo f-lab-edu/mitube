@@ -35,9 +35,19 @@ public class SmsService {
     @Value(value = "${coolsms.from-phonenumber}")
     private String fromPhoneNumber;
 
-    // ******* 수정 필요 ********
-    // sms api를 사용하기 때문에 발생할 수 있는 상황에 대한 고려가 필요하다.
     public void sendSMS(String phoneNumber) {
+
+        String code = makeCode();
+
+        SmsVerification smsVerification = SmsVerification.builder()
+                .phoneNumber(phoneNumber)
+                .verificationCode(code)
+                .build();
+
+        smsVerificationRepository.save(smsVerification);
+
+        /* 매 실행 혹은 테스트마다 sms api를 호출하는 것이 비 효율적이다.
+         따라서 위 코드처럼 문자 전송이 완료되었다고 가정하자.
 
         DefaultMessageService messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecretKey, apiUrl);
 
@@ -63,6 +73,7 @@ public class SmsService {
         }
         
         // 에러처리
+        */
     }
 
     private SmsVerification makeSmsVerification(String phoneNumber, String code) {

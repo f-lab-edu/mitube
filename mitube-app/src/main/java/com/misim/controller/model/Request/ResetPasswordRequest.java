@@ -16,10 +16,13 @@ public class ResetPasswordRequest extends VerificationDto {
 
     @Override
     public void check() {
-        super.check();
 
-        if (nickname == null) {
+        if (nickname == null || nickname.isBlank()) {
             throw new MitubeException(MitubeErrorCode.INVALID_NICKNAME);
+        }
+
+        if (getCode() == null || getCode().isBlank()) {
+            throw new MitubeException(MitubeErrorCode.INVALID_CODE);
         }
     }
 }
